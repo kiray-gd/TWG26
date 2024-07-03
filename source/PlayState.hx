@@ -16,6 +16,8 @@ class PlayState extends FlxState
 
 	//groups wallbounds
 	private var tileMapGroup:FlxGroup;
+	private var enemyGroup:FlxGroup;
+	private var particleGroup:FlxGroup;
 
 	//params
 	private var currentHeight:Int = 0;
@@ -31,6 +33,10 @@ class PlayState extends FlxState
 		//init groups
 		tileMapGroup = new FlxGroup();
 		add(tileMapGroup);
+		enemyGroup = new FlxGroup();
+		add(enemyGroup);
+		particleGroup = new FlxGroup();
+		add(particleGroup);
 
 		//Формирование одного этажа
 		creatingFloor();
@@ -54,10 +60,14 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float):Void
 		{
-			
-	
-			// Обработка коллизий
+		// Обработка коллизий игрока и стен
 			FlxG.collide(player, tileMapGroup, onCollideFunction);
+		// Обработка коллизий мобов и стен
+		FlxG.collide(enemyGroup, tileMapGroup);
+		// Обработка коллизий игрока и мобов
+		FlxG.collide(player, enemyGroup, onCollidePlayerEnemy);
+		// Обработка оверлапов крови и стен
+		FlxG.collide(particleGroup, tileMapGroup, onOverlapParticleWall);
 
 			// FlxG.collide(player, tileMapGroup, function(player:FlxObject, tilemap:FlxObject):Void {
 			// 	// if (player.touching == FlxObject.LEFT || player.touching == FlxObject.RIGHT)
@@ -90,6 +100,23 @@ class PlayState extends FlxState
 			}
 		}
 
+	private function onCollidePlayerEnemy(player:FlxObject, sprGroup:FlxObject):Void
+	{
+		if (player.touching == FlxDirectionFlags.DOWN)
+		{
+			(cast sprGroup : FlxObject).kill();
+			creatBlood(sprGroup.x + sprGroup.width / 2, sprGroup.y + sprGroup.height / 2);
+			player.velocity.y = -600;
+		}
+	}
+
+	private function onOverlapParticleWall(particle:FlxObject, sprGroup:FlxObject):Void
+	{
+		particle.velocity.set(0, 0);
+		particle.acceleration.set(0, 0);
+		// particle.angularAcceleration = 0;
+	}
+
 		private function onLavaCollision(player:FlxObject, lava:FlxObject):Void
 		{
 			// Заканчиваем игру, если игрок касается лавы
@@ -98,7 +125,18 @@ class PlayState extends FlxState
 		}
 
 		
-
+	// other functions
+	private function creatBlood(xPos:Float = 0, yPos:Float = 0):Void
+	{
+		for (i in 0...20)
+		{
+			var tempBlood:Particle = new Particle(0, 0);
+			tempBlood.setPosition(xPos, yPos);
+			tempBlood.velocity.set(FlxG.random.int(-100, 100) * 10, FlxG.random.int(-100, 100) * 10) * 5;
+			// tempBlood.angularAcceleration = FlxG.random.int(-30, 30);
+			particleGroup.add(tempBlood);
+		}
+	}
 		//creatingFloor function
 		private function creatingFloor():Void {
 			
@@ -140,6 +178,7 @@ class PlayState extends FlxState
 							case 0:
 								//nothing;
 							case 1:
+						// wall
 								var tempTile:Tile = new Tile(0,0);
 								tempTile.x = j * 16;
 								tempTile.y = i * 16 + currentHeight;
@@ -148,6 +187,7 @@ class PlayState extends FlxState
 								tempTile.setType(1);
 								tileMapGroup.add(tempTile);
 							case 2:
+						// platform
 								var tempTile:Tile = new Tile(0,0);
 								tempTile.x = j * 16;
 								tempTile.y = i * 16 + currentHeight;
@@ -156,13 +196,12 @@ class PlayState extends FlxState
 								tempTile.setType(2);
 								tileMapGroup.add(tempTile);
 							case 3:
-								var tempTile:Tile = new Tile(0,0);
-								tempTile.x = j * 16;
-								tempTile.y = i * 16 + currentHeight;
-								tempTile.immovable = true;
-								tempTile.allowCollisions = FlxDirectionFlags.ANY;
-								tempTile.setType(3);
-								tileMapGroup.add(tempTile);
+						// enemy
+						var tempEnemy:Enemy = new Enemy(0, 0);
+						tempEnemy.x = j * 16;
+						tempEnemy.y = i * 16 + currentHeight;
+						tempEnemy.immovable = true;
+						enemyGroup.add(tempEnemy);
 						}
 					
 				}
