@@ -4,13 +4,25 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.util.FlxTimer;
 
+using flixel.util.FlxSpriteUtil;
+
 class Player extends FlxSprite
 {
+	// player params
     public var canJump:Bool = true;
     public var canWallJump:Bool = false;
     private var jumpTimer:FlxTimer;
+	private var jumpPower:Int = -300;
+
+	// private var health:Int = 3;
 
     public var isWantFall = false;
+	public var canGetDamage = true;
+
+	public var healthPoint:Int = 3;
+
+	private var damageTimer:FlxTimer;
+	private var flickerTime:Float = 2;
 
     public function new(X:Float, Y:Float)
     {
@@ -29,11 +41,15 @@ class Player extends FlxSprite
         // whenever sprite is facing LEFT, flip the graphic horizontally
         this.setFacingFlip(LEFT, true, false);
 
-        maxVelocity.set(80, 200); // Максимальная скорость
-        acceleration.set(0, 400); // Гравитация
+		maxVelocity.set(120, 600); // Максимальная скорость
+		acceleration.set(0, 600); // Гравитация
         drag.set(400, 0); // Сопротивление
+		// изменяем размер хитбокса
+		this.setSize(8, 16);
+		this.offset.set(4, 0);
 
         jumpTimer = new FlxTimer();
+		damageTimer = new FlxTimer();
     }
 
     override public function update(elapsed:Float):Void
@@ -60,12 +76,12 @@ class Player extends FlxSprite
         {
             if (canJump)
             {
-                velocity.y = -200;
+				velocity.y = jumpPower;
                 canJump = false;
             }
             else if (canWallJump)
             {
-                velocity.y = -200;
+				velocity.y = jumpPower;
                 velocity.x = touching == LEFT ? maxVelocity.x : -maxVelocity.x;
                 canWallJump = false;
             }
@@ -74,7 +90,7 @@ class Player extends FlxSprite
         }   else {
             isWantFall = false;
         }
-        
+
 
         // Обновление флагов прыжка
         if (isTouching(FLOOR))
@@ -101,4 +117,19 @@ class Player extends FlxSprite
             canWallJump = false;
         });
     }
+	public function onTrapCollision():Void
+	{
+		if (canGetDamage)
+		{
+			healthPoint -= 1;
+			canGetDamage = false;
+			this.flicker(flickerTime);
+			// this.alpha = 0.5;
+			damageTimer.start(flickerTime, function(timer:FlxTimer)
+			{
+				canGetDamage = true;
+				// this.alpha = 1;
+			});
+		}
+	}
 }
