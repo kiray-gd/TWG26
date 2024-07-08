@@ -11,13 +11,16 @@ import flixel.math.FlxVelocity;
 import flixel.util.FlxDirection;
 import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
+import openfl.display.Sprite;
 import sys.io.File;
 
 class PlayState extends FlxState
 {
 	private var player:Player;
 	private var playerStartPosition:FlxPoint = new FlxPoint(0, 0);
+	// область видимости игрока
 	private var visionMax:Int = 6;
+
 
 	//groups wallbounds
 	private var tileMapGroup:FlxGroup;
@@ -95,11 +98,13 @@ class PlayState extends FlxState
 		// Обработка коллайдов игрока и объектов
 		FlxG.collide(player, itemGroup, onCollidePlayerItems);
 		// Обработка коллайдов объектов и стен
-		FlxG.collide(itemGroup, tileMapGroup, onCollideItemsWall);
+		// FlxG.collide(itemGroup, tileMapGroup, onCollideItemsWall);
 		// Обработка коллайдов объектов и стен
 		FlxG.collide(itemGroup, itemGroup);
 		// Обработка оверлапов крови и стен
 		FlxG.collide(particleGroup, tileMapGroup, onOverlapParticleWall);
+		// Обработка оверлапа мили атаки игрока и врагов
+		FlxG.overlap(player.meleeAttack, enemyGroup, onMeleeAttackOvelap);
 
 			// FlxG.collide(player, tileMapGroup, function(player:FlxObject, tilemap:FlxObject):Void {
 			// 	// if (player.touching == FlxObject.LEFT || player.touching == FlxObject.RIGHT)
@@ -116,6 +121,23 @@ class PlayState extends FlxState
 
 		// обновление области видимости игрока
 		visionRegionUpdate();
+		// Проверяем живы ли враги по их ХП поинтам
+		checkEnemyAlive();
+		// Контроль числа партиклов, чтобы комп не умер
+		if (particleGroup.length > 100)
+		{
+			while (particleGroup.length > 100)
+			{
+				var tmp:FlxSprite = cast(particleGroup.getFirstExisting(), FlxSprite);
+				if (tmp != null)
+				{
+					tmp.kill();
+					particleGroup.remove(tmp, true);
+				}
+			}
+		}
+	
+
 
 			super.update(elapsed);
 		}
@@ -219,6 +241,14 @@ class PlayState extends FlxState
 
 	}
 
+	private function onMeleeAttackOvelap(attackObj:FlxObject, enemyObj:FlxObject)
+	{
+		if (attackObj.visible = true)
+		{
+			cast(enemyObj, Enemy).onAttack();
+		}
+	}
+
 	private function visionRegionUpdate()
 	{
 		// visionMax 6 default
@@ -248,6 +278,20 @@ class PlayState extends FlxState
 			else
 			{
 				everyEnemy.visible = false;
+			}
+		}
+	}
+
+	private function checkEnemyAlive():Void
+	{
+		for (enem in enemyGroup)
+		{
+			var tempEnemySpr:Enemy = cast(enem, Enemy);
+			if (!tempEnemySpr.isAlive)
+			{
+				creatBlood(tempEnemySpr.x + tempEnemySpr.width / 2, tempEnemySpr.y + tempEnemySpr.height / 2);
+				tempEnemySpr.kill();
+				enemyGroup.remove(enem, true);
 			}
 		}
 	}
@@ -344,7 +388,7 @@ class PlayState extends FlxState
 						var tempEnemy:Enemy = new Enemy(0, 0);
 						tempEnemy.x = j * 16;
 						tempEnemy.y = i * 16;
-						tempEnemy.immovable = true;
+						tempEnemy.immovable = false;
 						enemyGroup.add(tempEnemy);
 					case 4:
 						var tempTile:Tile = new Tile(0, 0);
@@ -392,6 +436,7 @@ class PlayState extends FlxState
 						var tempObj:ObjectItem = new ObjectItem(0, 0);
 						tempObj.x = j * 16;
 						tempObj.y = i * 16;
+						tempObj.immovable = true;
 						tempObj.allowCollisions = FlxDirectionFlags.ANY;
 						itemGroup.add(tempObj);
 					case 14:

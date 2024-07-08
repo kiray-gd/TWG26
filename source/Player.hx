@@ -23,6 +23,15 @@ class Player extends FlxSprite
 	private var damageTimer:FlxTimer;
 	private var flickerTime:Float = 2;
 
+	// for attack
+	private var canAttack:Bool = true;
+	private var isAttack:Bool = false;
+	private var attackCoolDownTimer:FlxTimer;
+	private var coolDownTime:Float = 0.2;
+
+	// attack sprite
+	public var meleeAttack:MeleeAttack;
+
     public function new(X:Float, Y:Float)
     {
 		super(X, Y);
@@ -30,6 +39,7 @@ class Player extends FlxSprite
         animation.add("idle", [0], 1, false);
         animation.add("run", [0, 1, 2, 3], 10, true);
 		animation.add("jump", [10], 1, false);
+		animation.add("attack", [20, 21, 22, 21, 20], 20, false);
 
 		this.setFacingFlip(RIGHT, false, false);
         this.setFacingFlip(LEFT, true, false);
@@ -43,6 +53,10 @@ class Player extends FlxSprite
 
         jumpTimer = new FlxTimer();
 		damageTimer = new FlxTimer();
+		attackCoolDownTimer = new FlxTimer();
+
+		meleeAttack = new MeleeAttack(this.x, this.y);
+		FlxG.state.add(meleeAttack);
     }
 
     override public function update(elapsed:Float):Void
@@ -91,19 +105,51 @@ class Player extends FlxSprite
 			isJumping = false;
 		}
 
-		// обновление анимации в зависимости от линейной скорости
-		if (Math.abs(velocity.y) > 40)
+		// атака
+		if (FlxG.keys.pressed.V && canAttack)
 		{
-            animation.play("jump");
+			canAttack = false;
+			isAttack = true;
+			animation.play("attack");
+			meleeAttack.startAttack();
+			// meleeAttack.setPosition(this.x + 16, this.y - 8);
+			if (this.facing == RIGHT)
+			{
+				meleeAttack.setPosition(this.x + 24, this.y - 8);
+				meleeAttack.facing = RIGHT;
+			}
+			else
+			{
+				meleeAttack.setPosition(this.x - 40, this.y - 8);
+				meleeAttack.facing = LEFT;
+			}
+			attackCoolDownTimer.start(coolDownTime, function(timer:FlxTimer)
+			{
+				canAttack = true;
+				isAttack = false;
+				meleeAttack.visible = false;
+				// создаем спрайт атаки
+				// tempMelee:
+			});
 		}
-		else if (Math.abs(velocity.x) > 10)
+
+		// обновление анимации в зависимости от линейной скорости если нет анимации атаки
+		if (!isAttack)
 		{
-            animation.play("run");
+			if (Math.abs(velocity.y) > 40)
+			{
+				animation.play("jump");
+			}
+			else if (Math.abs(velocity.x) > 10)
+			{
+				animation.play("run");
+			}
+			else
+			{
+				animation.play("idle");
+			}
 		}
-		else
-		{
-            animation.play("idle");
-        }
+		
 
         super.update(elapsed);
     }

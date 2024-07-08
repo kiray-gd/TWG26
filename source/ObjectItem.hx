@@ -11,9 +11,9 @@ class ObjectItem extends FlxSprite {
         loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
         animation.add("idle", [11], 1, false);
         animation.play("idle");
-        immovable = false;
+        // immovable = false;
         // gravity
-		acceleration.set(0, 600);
+		// acceleration.set(0, 600);
         
         // allowCollisions = FlxDirectionFlags.ANY;
     }
