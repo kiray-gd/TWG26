@@ -76,6 +76,9 @@ class PlayState extends FlxState
 		player = new Player(playerStartPosition.x, playerStartPosition.y);
         add(player);
 
+		// даем врагам ссылки на игрока
+		setSourceToEnemys();
+
 		//доп условия сцены
 		// FlxG.camera.setScrollBoundsRect(32, 0, 288, 1000);
 		// FlxG.camera.setScrollBounds(32, 288, null, null);
@@ -92,11 +95,14 @@ class PlayState extends FlxState
 		// Обработка коллизий игрока и стен
 		FlxG.collide(player, tileMapGroup, onCollideFunction);
 		// Обработка коллизий игрока и мобов
-		FlxG.overlap(player, enemyGroup, onCollidePlayerEnemy);
+		// FlxG.overlap(player, enemyGroup, onCollidePlayerEnemy);
+		FlxG.collide(player, enemyGroup, onCollidePlayerEnemy);
 		// Обработка коллизий мобов и стен
 		FlxG.collide(enemyGroup, tileMapGroup);
 		// Обработка коллайдов игрока и объектов
 		FlxG.collide(player, itemGroup, onCollidePlayerItems);
+		// ОБработка коллайдов врагов и объектов
+		FlxG.collide(enemyGroup, itemGroup);
 		// Обработка коллайдов объектов и стен
 		// FlxG.collide(itemGroup, tileMapGroup, onCollideItemsWall);
 		// Обработка коллайдов объектов и стен
@@ -105,6 +111,8 @@ class PlayState extends FlxState
 		FlxG.collide(particleGroup, tileMapGroup, onOverlapParticleWall);
 		// Обработка оверлапа мили атаки игрока и врагов
 		FlxG.overlap(player.meleeAttack, enemyGroup, onMeleeAttackOvelap);
+		// Обработка оверлапа мили атаки и объектов
+		FlxG.overlap(player.meleeAttack, itemGroup, onMeleeAttackItemOvelap);
 
 			// FlxG.collide(player, tileMapGroup, function(player:FlxObject, tilemap:FlxObject):Void {
 			// 	// if (player.touching == FlxObject.LEFT || player.touching == FlxObject.RIGHT)
@@ -123,6 +131,7 @@ class PlayState extends FlxState
 		visionRegionUpdate();
 		// Проверяем живы ли враги по их ХП поинтам
 		checkEnemyAlive();
+		checkPlayerAlive();
 		// Контроль числа партиклов, чтобы комп не умер
 		if (particleGroup.length > 100)
 		{
@@ -164,14 +173,15 @@ class PlayState extends FlxState
 				var _pl:Player = cast(player, Player);
 				_pl.onTrapCollision();
 
-				if (_pl.healthPoint <= 0)
-				{
-					creatBlood(_pl.x + _pl.width / 2, _pl.y + _pl.height / 2);
-					_pl.kill();
-					isGameOver = true;
-					gameOver();
-				}
-				else if (_pl.touching == FlxDirectionFlags.UP)
+				// if (_pl.healthPoint <= 0)
+				// {
+				// 	creatBlood(_pl.x + _pl.width / 2, _pl.y + _pl.height / 2);
+				// 	_pl.kill();
+				// 	isGameOver = true;
+				// 	gameOver();
+				// }
+				// else
+				if (_pl.touching == FlxDirectionFlags.UP)
 				{
 					_pl.velocity.y += 300;
 				}
@@ -195,7 +205,7 @@ class PlayState extends FlxState
 			}
 		}
 
-	private function onCollidePlayerEnemy(player:FlxObject, sprGroup:FlxObject):Void
+	private function onCollidePlayerEnemy(playerObj:FlxObject, sprGroup:FlxObject):Void
 	{
 		// if (player.touching == FlxDirectionFlags.DOWN)
 		// {
@@ -205,19 +215,25 @@ class PlayState extends FlxState
 		// 	// player.acceleration.y = -1000;
 		// }
 		// test for overlap method
-		if (player.y < sprGroup.y)
+		if (playerObj.y < sprGroup.y - 8)
 		{
-			(cast sprGroup : FlxObject).kill();
-			creatBlood(sprGroup.x + sprGroup.width / 2, sprGroup.y + sprGroup.height / 2);
-			if (player.velocity.y > 0)
+			if (playerObj.velocity.y > 0)
 			{
-				player.velocity.y = -300;
+				playerObj.velocity.y = -300;
 			}
 			else
 			{
-				player.velocity.y -= 300;
+				playerObj.velocity.y -= 300;
 				// player.acceleration.y = -1000;
 			}
+			creatBlood(sprGroup.x + sprGroup.width / 2, sprGroup.y + sprGroup.height / 2);
+			// (cast sprGroup : FlxObject).kill();
+			sprGroup.kill();
+			enemyGroup.remove(sprGroup, true);
+		}
+		else
+		{
+			cast(playerObj, Player).onEnemyHit();
 		}
 	}
 
@@ -243,9 +259,22 @@ class PlayState extends FlxState
 
 	private function onMeleeAttackOvelap(attackObj:FlxObject, enemyObj:FlxObject)
 	{
-		if (attackObj.visible = true)
+		if (attackObj.visible == true && cast(enemyObj, Enemy).canGetDamage)
 		{
-			cast(enemyObj, Enemy).onAttack();
+			cast(enemyObj, Enemy).onAttack(player.x, player.y);
+		}
+	}
+
+	private function onMeleeAttackItemOvelap(attackObj:FlxObject, itemObj:FlxObject)
+	{
+		if (cast(itemObj, ObjectItem).type == 0 && attackObj.visible)
+		{
+			cast(itemObj, ObjectItem).onAttack();
+		}
+		if (cast(itemObj, ObjectItem).alpha <= 0.5)
+		{
+			itemObj.kill();
+			itemGroup.remove(itemObj, true);
 		}
 	}
 
@@ -280,6 +309,18 @@ class PlayState extends FlxState
 				everyEnemy.visible = false;
 			}
 		}
+		// hide objects
+		for (elementItem in itemGroup)
+		{
+			if (FlxMath.distanceBetween(player, cast(elementItem, FlxSprite)) < tileSize * visionMax)
+			{
+				elementItem.visible = true;
+			}
+			else
+			{
+				elementItem.visible = false;
+			}
+		}
 	}
 
 	private function checkEnemyAlive():Void
@@ -295,6 +336,21 @@ class PlayState extends FlxState
 			}
 		}
 	}
+	private function checkPlayerAlive():Void
+	{
+		if (!player.isAlive)
+		{
+			if (!isGameOver)
+			{
+				creatBlood(player.x + player.width / 2, player.y + player.height / 2);
+			}
+
+			player.kill();
+			isGameOver = true;
+			gameOver();
+		}
+	}
+	
 
 	// прочее
 	private function gameOver():Void
@@ -384,7 +440,7 @@ class PlayState extends FlxState
 								tempTile.setType(2);
 								tileMapGroup.add(tempTile);
 							case 3:
-						// enemy
+						// enemy spowner
 						var tempEnemy:Enemy = new Enemy(0, 0);
 						tempEnemy.x = j * 16;
 						tempEnemy.y = i * 16;
@@ -437,6 +493,7 @@ class PlayState extends FlxState
 						tempObj.x = j * 16;
 						tempObj.y = i * 16;
 						tempObj.immovable = true;
+						tempObj.setType(0);
 						tempObj.allowCollisions = FlxDirectionFlags.ANY;
 						itemGroup.add(tempObj);
 					case 14:
@@ -450,4 +507,11 @@ class PlayState extends FlxState
 
 		// currentHeight -= tileSize * 32;
 		}
+	private function setSourceToEnemys()
+	{
+		for (enemyElement in enemyGroup)
+		{
+			cast(enemyElement, Enemy).setPlayerSource(player);
+		}
+	}
 }

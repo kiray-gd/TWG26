@@ -11,14 +11,14 @@ class MeleeAttack extends FlxSprite {
         super(x, y);
         immovable = true;
         loadGraphic("assets/images/meleeattacksprite.png", true, 24, 24, true);
-        animation.add("idle", [0, 1, 2, 3], 30, false);
-        visible = false;
+		animation.add("idle", [0, 1, 2, 3], 60, false);
+		visible = false;
         this.setFacingFlip(RIGHT, false, false);
         this.setFacingFlip(LEFT, true, false);
     }
     
     public function startAttack():Void {
-        visible = true;
+		// visible = true;
         animation.play("idle");
     }
 }

@@ -2,6 +2,7 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
 
 class Tile extends FlxSprite
@@ -13,7 +14,9 @@ class Tile extends FlxSprite
 	private var secondsToDisappear:Float = 3;
 	private var timerToDie:FlxTimer;
 
-
+	private var isRefreshing = false;
+	private var refreshingTime:Int = 120;
+	private var currentRefreshingTime:Int = 0;
 
     public function new(X:Float, Y:Float)
     {
@@ -37,8 +40,7 @@ class Tile extends FlxSprite
 
     override public function update(elapsed:Float):Void
     {
-        
-        super.update(elapsed);
+
 		if (isTemporary && wasTouched)
 		{
 			isTemporary = false;
@@ -46,10 +48,28 @@ class Tile extends FlxSprite
 			// sound shake
 			timerToDie.start(secondsToDisappear, function(timer:FlxTimer)
 			{
-				trace("kill tile");
-				this.kill();
+				// trace("kill tile");
+				// this.kill();
+				this.alpha = 0;
+				this.allowCollisions = FlxDirectionFlags.NONE;
+				isRefreshing = true;
 			});
 		}
+		if (isRefreshing)
+		{
+			currentRefreshingTime++;
+			if (currentRefreshingTime == refreshingTime)
+			{
+				currentRefreshingTime = 0;
+				wasTouched = false;
+				isTemporary = true;
+				this.alpha = 1;
+				isRefreshing = false;
+				this.allowCollisions = FlxDirectionFlags.UP;
+			}
+		}
+
+		super.update(elapsed);
     }
 
     public function setType(_type:Int = 0):Void{

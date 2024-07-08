@@ -14,6 +14,7 @@ class Player extends FlxSprite
     private var jumpTimer:FlxTimer;
 	private var jumpPower:Int = -250;
 	private var isJumping:Bool = false;
+	public var isAlive:Bool = true;
 
     public var isWantFall = false;
 	public var canGetDamage = true;
@@ -27,7 +28,7 @@ class Player extends FlxSprite
 	private var canAttack:Bool = true;
 	private var isAttack:Bool = false;
 	private var attackCoolDownTimer:FlxTimer;
-	private var coolDownTime:Float = 0.2;
+	private var coolDownTime:Float = 0.4;
 
 	// attack sprite
 	public var meleeAttack:MeleeAttack;
@@ -94,7 +95,7 @@ class Player extends FlxSprite
 				isWantFall = false;
 			}
 		}
-		else if (FlxG.keys.justPressed.SPACE && canJump)
+		else if (FlxG.keys.justPressed.SPACE && canJump && touching == FLOOR)
 		{
 			isJumping = true;
 			canJump = false;
@@ -115,11 +116,13 @@ class Player extends FlxSprite
 			// meleeAttack.setPosition(this.x + 16, this.y - 8);
 			if (this.facing == RIGHT)
 			{
+				meleeAttack.visible = true;
 				meleeAttack.setPosition(this.x + 24, this.y - 8);
 				meleeAttack.facing = RIGHT;
 			}
 			else
 			{
+				meleeAttack.visible = true;
 				meleeAttack.setPosition(this.x - 40, this.y - 8);
 				meleeAttack.facing = LEFT;
 			}
@@ -151,6 +154,17 @@ class Player extends FlxSprite
 		}
 		
 
+		if (meleeAttack.animation.finished)
+		{
+			meleeAttack.visible = false;
+		}
+
+		// is Alive?
+		if (healthPoint <= 0)
+		{
+			isAlive = false;
+		}
+
         super.update(elapsed);
     }
 
@@ -165,6 +179,21 @@ class Player extends FlxSprite
 			{
 				canGetDamage = true;
 			});
+		}
+	}
+	public function onEnemyHit():Void
+	{
+		if (canGetDamage)
+		{
+			healthPoint -= 1;
+			canGetDamage = false;
+			this.flicker(flickerTime);
+			damageTimer.start(flickerTime, function(timer:FlxTimer)
+			{
+				canGetDamage = true;
+			});
+			this.velocity.x = this.velocity.x * -1;
+			this.velocity.y = this.velocity.y * -1;
 		}
 	}
 }
