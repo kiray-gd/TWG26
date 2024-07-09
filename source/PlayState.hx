@@ -287,14 +287,18 @@ class PlayState extends FlxState
 				playerObj.velocity.y -= 300;
 				// player.acceleration.y = -1000;
 			}
-			creatBlood(sprGroup.x + sprGroup.width / 2, sprGroup.y + sprGroup.height / 2);
+			// creatBlood(sprGroup.x + sprGroup.width / 2, sprGroup.y + sprGroup.height / 2);
 			// (cast sprGroup : FlxObject).kill();
-			sprGroup.kill();
-			enemyGroup.remove(sprGroup, true);
+			cast(sprGroup, Enemy).onAttack(player.x, player.y, 2);
+			// sprGroup.kill();
+			// enemyGroup.remove(sprGroup, true);
 		}
 		else
 		{
-			cast(playerObj, Player).onEnemyHit();
+			if (cast(sprGroup, Enemy).canGetDamage)
+			{
+				cast(playerObj, Player).onEnemyHit();
+			}
 		}
 	}
 
@@ -322,7 +326,7 @@ class PlayState extends FlxState
 	{
 		if (attackObj.visible == true && cast(enemyObj, Enemy).canGetDamage)
 		{
-			cast(enemyObj, Enemy).onAttack(player.x, player.y);
+			cast(enemyObj, Enemy).onAttack(player.x, player.y, 1);
 		}
 	}
 
@@ -383,7 +387,11 @@ class PlayState extends FlxState
 			}
 			else
 			{
-				everyEnemy.visible = false;
+				if (cast(everyEnemy, Enemy).canHide)
+				{
+					// not hiding
+					everyEnemy.visible = false;
+				}
 			}
 		}
 		// hide objects

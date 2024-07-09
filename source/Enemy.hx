@@ -13,6 +13,7 @@ class Enemy extends FlxSprite
     public var type:Int = 0;
 	// 0 - skull
 	public var price:Int = 10;
+	public var canHide:Bool = true;
 
 	public var canGetDamage:Bool = true;
 
@@ -70,12 +71,28 @@ class Enemy extends FlxSprite
 					{
 						if (this.x < playerSource.x)
 						{
-							acceleration.x += 10;
+							if (velocity.x < 0)
+							{
+								velocity.x = 0;
+							}
+							if (Math.abs(velocity.x) < 50)
+							{
+								acceleration.x += 24;
+							}
+	
 							this.facing = RIGHT;
 						}
 						else
 						{
-							acceleration.x -= 10;
+							if (velocity.x > 0)
+							{
+								velocity.x = 0;
+							}
+							if (Math.abs(velocity.x) < 50)
+							{
+								acceleration.x -= 24;
+							}
+	
 							this.facing = LEFT;
 						}
 					}
@@ -107,7 +124,11 @@ class Enemy extends FlxSprite
 					{
 						if (this.x < playerSource.x)
 						{
-							if (Math.abs(velocity.x) < 200)
+							if (velocity.x < 0)
+							{
+								velocity.x = velocity.x * 0.5;
+							}
+							if (Math.abs(velocity.x) < 150)
 							{
 								acceleration.x += 100;
 							}
@@ -116,7 +137,11 @@ class Enemy extends FlxSprite
 						}
 						else
 						{
-							if (Math.abs(velocity.x) < 200)
+							if (velocity.x > 0)
+							{
+								velocity.x = velocity.x * 0.5;
+							}
+							if (Math.abs(velocity.x) < 150)
 							{
 								acceleration.x -= 100;
 							}
@@ -161,6 +186,7 @@ class Enemy extends FlxSprite
 				healthPoint = 4;
 				price = 500;
 				visibilityArea = 300;
+				canHide = false;
 				animation.add("idle", [8, 9, 10, 11, 10, 9], 30, true, true);
 				animation.add("moving", [8, 9, 10, 11, 10, 9], 30, true, true);
 		}
@@ -168,11 +194,11 @@ class Enemy extends FlxSprite
 		animation.play("idle");
 	}
 
-	public function onAttack(playerPosX:Float = 0, playerPosY:Float = 0):Void
+	public function onAttack(playerPosX:Float = 0, playerPosY:Float = 0, damage:Int = 1):Void
 	{
 		if (canGetDamage)
 		{
-			healthPoint -= 1;
+			healthPoint -= damage;
 			canGetDamage = false;
 			this.alpha = 0.5;
 			this.color = FlxColor.RED;
