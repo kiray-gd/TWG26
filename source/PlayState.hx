@@ -17,7 +17,7 @@ import sys.io.File;
 class PlayState extends FlxState
 {
 	private var player:Player;
-	private var playerStartPosition:FlxPoint = new FlxPoint(0, 0);
+	private var playerStartPosition:FlxPoint;
 	// область видимости игрока
 	private var visionMax:Int = 6;
 
@@ -28,6 +28,9 @@ class PlayState extends FlxState
 	private var itemGroup:FlxGroup;
 	// particle
 	private var particleGroup:FlxGroup;
+
+	// map building in Array of Integer
+	private var mapTilesAndObjects:Array<Array<Int>>;
 
 	//params
 	// private var currentHeight:Int = (32 * 16);
@@ -74,20 +77,24 @@ class PlayState extends FlxState
 
 		// Создаем игрока
 		// если позиция не задана в файле Reg.hx, то берем из данных тайл карты
-		if (Reg.playerLastPosition.x == 0 && Reg.playerLastPosition.y == 0)
-		{
-			player = new Player(playerStartPosition.x, playerStartPosition.y);
-			player.velocity.y -= 10;
-			trace("player created at position:", player.getPosition());
-		}
-		else
-		{
-			player = new Player(Reg.playerLastPosition.x, Reg.playerLastPosition.y);
-			player.velocity.y -= 10;
-			player.y -= 16;
-			// player = new Player(289, 610);
-			trace("player created at position:", player.getPosition());
-		}
+		playerStartPosition = Reg.playerLastPosition;
+		player = new Player(playerStartPosition.x, playerStartPosition.y);
+		player.velocity.y -= 10;
+		trace("player created at position:", player.getPosition());
+		// if (Reg.playerLastPosition.x == 0 && Reg.playerLastPosition.y == 0)
+		// {
+		// 	player = new Player(playerStartPosition.x, playerStartPosition.y);
+		// 	player.velocity.y -= 10;
+		// 	trace("player created at position:", player.getPosition());
+		// }
+		// else
+		// {
+		// 	player = new Player(Reg.playerLastPosition.x, Reg.playerLastPosition.y);
+		// 	player.velocity.y -= 10;
+		// 	player.y -= 16;
+		// 	// player = new Player(289, 610);
+		// 	trace("player created at position:", player.getPosition());
+		// }
         add(player);
 
 		// даем врагам ссылки на игрока
@@ -106,6 +113,7 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float):Void
 		{
+		super.update(elapsed);
 		// Обработка коллизий игрока и стен
 		FlxG.collide(player, tileMapGroup, onCollideFunction);
 		// Обработка коллизий игрока и мобов
@@ -163,7 +171,7 @@ class PlayState extends FlxState
 	
 
 
-			super.update(elapsed);
+
 		}
 
 		//ON UPDATE FUNCTIONS
@@ -435,7 +443,8 @@ class PlayState extends FlxState
 		var csvData:String = File.getContent(dataMapString);
 			// Функция для преобразования CSV данных в двумерный массив
 			var rows:Array<String> = csvData.split("\n");
-			var result:Array<Array<Int>> = [];
+		mapTilesAndObjects = [];
+		// var liveFormPosition:Array<Array<Int>> = [];
 			
 			for (row in rows) {
 				if (row != "") { // Игнорируем пустые строки
@@ -444,114 +453,91 @@ class PlayState extends FlxState
 					for (value in values) {
 						intValues.push(Std.parseInt(value));
 					}
-					result.push(intValues);
+				mapTilesAndObjects.push(intValues);
 				}
 			}
 
 			// trace(result);
 
-			for (i in 0...result.length)
+		for (i in 0...mapTilesAndObjects.length)
 				{
-					for (j in 0...result[i].length)
+			for (j in 0...mapTilesAndObjects[i].length)
 					{
-						switch result[i][j] {
+				switch mapTilesAndObjects[i][j]
+				{
 							case 0:
 								//nothing;
 							case 1:
 						// wall
-								var tempTile:Tile = new Tile(0,0);
-								tempTile.x = j * 16;
-						tempTile.y = i * 16;
-								tempTile.immovable = true;
-								tempTile.allowCollisions = FlxDirectionFlags.ANY;
-								tempTile.setType(1);
-								tileMapGroup.add(tempTile);
+						creatWall(j, i, true, FlxDirectionFlags.ANY, 1);
 							case 2:
 						// platform
-								var tempTile:Tile = new Tile(0,0);
-								tempTile.x = j * 16;
-						tempTile.y = i * 16;
-								tempTile.immovable = true;
-								tempTile.allowCollisions = FlxDirectionFlags.UP;
-								tempTile.setType(2);
-								tileMapGroup.add(tempTile);
+						creatWall(j, i, true, FlxDirectionFlags.UP, 2);
 							case 3:
 						// enemy spowner
-						var tempEnemy:Enemy = new Enemy(0, 0);
-						tempEnemy.x = j * 16;
-						tempEnemy.y = i * 16;
-						tempEnemy.immovable = false;
-						enemyGroup.add(tempEnemy);
+						creatEnemy(j, i, false);
 					case 4:
-						var tempTile:Tile = new Tile(0, 0);
-						tempTile.x = j * 16;
-						tempTile.y = i * 16;
-						tempTile.immovable = true;
-						tempTile.allowCollisions = FlxDirectionFlags.ANY;
-						tempTile.setType(4);
-						tileMapGroup.add(tempTile);
+						creatWall(j, i, true, FlxDirectionFlags.ANY, 4);
 					case 5:
-						var tempTile:Tile = new Tile(0, 0);
-						tempTile.x = j * 16;
-						tempTile.y = i * 16;
-						tempTile.immovable = true;
-						tempTile.allowCollisions = FlxDirectionFlags.ANY;
-						tempTile.setType(5);
-						tileMapGroup.add(tempTile);
+						creatWall(j, i, true, FlxDirectionFlags.ANY, 5);
 					case 6:
-						var tempTile:Tile = new Tile(0, 0);
-						tempTile.x = j * 16;
-						tempTile.y = i * 16;
-						tempTile.immovable = true;
-						tempTile.allowCollisions = FlxDirectionFlags.ANY;
-						tempTile.setType(6);
-						tileMapGroup.add(tempTile);
+						creatWall(j, i, true, FlxDirectionFlags.ANY, 6);
 					case 7:
-						var tempTile:Tile = new Tile(0, 0);
-						tempTile.x = j * 16;
-						tempTile.y = i * 16;
-						tempTile.immovable = true;
-						tempTile.allowCollisions = FlxDirectionFlags.ANY;
-						tempTile.setType(7);
-						tileMapGroup.add(tempTile);
+						creatWall(j, i, true, FlxDirectionFlags.ANY, 7);
 					case 8:
 						// temporary platform
-						var tempTile:Tile = new Tile(0, 0);
-						tempTile.x = j * 16;
-						tempTile.y = i * 16;
-						tempTile.immovable = true;
-						tempTile.allowCollisions = FlxDirectionFlags.UP;
-						tempTile.setType(8);
-						tileMapGroup.add(tempTile);
+						creatWall(j, i, true, FlxDirectionFlags.UP, 8);
 					case 11:
 						// разрушаемые стены (пока в виде ящиков)
-						var tempObj:ObjectItem = new ObjectItem(0, 0);
-						tempObj.x = j * 16;
-						tempObj.y = i * 16;
-						tempObj.immovable = true;
-						tempObj.setType(0);
-						tempObj.allowCollisions = FlxDirectionFlags.ANY;
-						itemGroup.add(tempObj);
+						creatObject(j, i, true, FlxDirectionFlags.ANY, 0);
 					case 12:
 						// bonfire
-						var tempObj:ObjectItem = new ObjectItem(0, 0);
-						tempObj.x = j * 16;
-						tempObj.y = i * 16;
-						tempObj.immovable = true;
-						tempObj.setType(1);
-						tempObj.allowCollisions = FlxDirectionFlags.NONE;
-						itemGroup.add(tempObj);
+						creatObject(j, i, true, FlxDirectionFlags.NONE, 1);
 					case 14:
 						// player start position
-						trace("player start position:", playerStartPosition);
-						playerStartPosition.set(j * tileSize, i * tileSize);
+						// playerStartPosition.set(j * tileSize, i * tileSize);
+						if (Reg.playerLastPosition.x == 0 && Reg.playerLastPosition.y == 0)
+						{
+							Reg.playerLastPosition.set(j * tileSize, i * tileSize);
 						}
-					
+						trace("player start position:", playerStartPosition);
 				}
 			}
+		}
 
 		// currentHeight -= tileSize * 32;
-		}
+	}
+
+	private function creatWall(jPos:Int = 0, iPos:Int = 0, isImmovable:Bool = true, dir:FlxDirectionFlags = FlxDirectionFlags.ANY, _type:Int = 1):Void
+	{
+		var tempTile:Tile = new Tile(jPos * 16, iPos * 16);
+		// tempTile.x = jPos * 16;
+		// tempTile.y = iPos * 16;
+		tempTile.immovable = isImmovable;
+		tempTile.allowCollisions = dir;
+		tempTile.setType(_type);
+		tileMapGroup.add(tempTile);
+	}
+	private function creatEnemy(jPos:Int = 0, iPos:Int = 0, isImmovable:Bool = true):Void
+	{
+		var tempEnemy:Enemy = new Enemy(jPos * 16, iPos * 16);
+		// tempEnemy.x = jPos * 16;
+		// tempEnemy.y = iPos * 16;
+		tempEnemy.immovable = isImmovable;
+		enemyGroup.add(tempEnemy);
+	}
+
+	private function creatObject(jPos:Int = 0, iPos:Int = 0, isImmovable:Bool = true, dir:FlxDirectionFlags = FlxDirectionFlags.ANY, type:Int = 0)
+	{
+		var tempObj:ObjectItem = new ObjectItem(0, 0);
+		tempObj.x = jPos * 16;
+		tempObj.y = iPos * 16;
+		tempObj.immovable = isImmovable;
+		tempObj.setType(type);
+		tempObj.allowCollisions = dir;
+		itemGroup.add(tempObj);
+	}
+
 	private function setSourceToEnemys()
 	{
 		for (enemyElement in enemyGroup)
