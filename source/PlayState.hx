@@ -132,6 +132,7 @@ class PlayState extends FlxState
 		// Проверяем живы ли враги по их ХП поинтам
 		checkEnemyAlive();
 		checkPlayerAlive();
+		checkObjectsNearby();
 		// Контроль числа партиклов, чтобы комп не умер
 		if (particleGroup.length > 100)
 		{
@@ -351,6 +352,27 @@ class PlayState extends FlxState
 		}
 	}
 	
+	// проверка расположенных поблизости объектов на активацию игроком
+	private function checkObjectsNearby():Void
+	{
+		var isAnyObjectHere:Bool = false;
+		for (itemObject in itemGroup)
+		{
+			var _item:FlxSprite = cast(itemObject, FlxSprite);
+			// если дистанция между объектом и игроком меньше 30 то появляется текстовое окно
+			// if (FlxMath.distanceBetween(player, cast(itemObject, FlxSprite)) < 30)
+			if (Math.abs(player.x + 4 - _item.x) < 24 && Math.abs(player.y - _item.y) < 8)
+			{
+				player.activateObject(cast(_item, ObjectItem).type);
+				isAnyObjectHere = true;
+				// continue;
+			}
+		}
+		if (!isAnyObjectHere)
+		{
+			player.activateObject(0);
+		}
+	}
 
 	// прочее
 	private function gameOver():Void
@@ -488,13 +510,22 @@ class PlayState extends FlxState
 						tempTile.setType(8);
 						tileMapGroup.add(tempTile);
 					case 11:
-						// objects
+						// разрушаемые стены (пока в виде ящиков)
 						var tempObj:ObjectItem = new ObjectItem(0, 0);
 						tempObj.x = j * 16;
 						tempObj.y = i * 16;
 						tempObj.immovable = true;
 						tempObj.setType(0);
 						tempObj.allowCollisions = FlxDirectionFlags.ANY;
+						itemGroup.add(tempObj);
+					case 12:
+						// bonfire
+						var tempObj:ObjectItem = new ObjectItem(0, 0);
+						tempObj.x = j * 16;
+						tempObj.y = i * 16;
+						tempObj.immovable = true;
+						tempObj.setType(1);
+						tempObj.allowCollisions = FlxDirectionFlags.NONE;
 						itemGroup.add(tempObj);
 					case 14:
 						// player start position

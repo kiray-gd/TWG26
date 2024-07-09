@@ -2,6 +2,8 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 
 using flixel.util.FlxSpriteUtil;
@@ -15,6 +17,7 @@ class Player extends FlxSprite
 	private var jumpPower:Int = -250;
 	private var isJumping:Bool = false;
 	public var isAlive:Bool = true;
+	private var canMove:Bool = true;
 
     public var isWantFall = false;
 	public var canGetDamage = true;
@@ -30,8 +33,14 @@ class Player extends FlxSprite
 	private var attackCoolDownTimer:FlxTimer;
 	private var coolDownTime:Float = 0.4;
 
-	// attack sprite
+	// additional sprites
 	public var meleeAttack:MeleeAttack;
+	public var txtGUI:FlxText;
+	public var typeActiveObject:Int = 1; // 1 - bonfire
+
+	private var isWorking:Bool = false;
+	private var workTimer:Int = 180;
+	private var currentWprkTime:Int = 0;
 
     public function new(X:Float, Y:Float)
     {
@@ -56,34 +65,62 @@ class Player extends FlxSprite
 		damageTimer = new FlxTimer();
 		attackCoolDownTimer = new FlxTimer();
 
+		// additional sprite initiation
 		meleeAttack = new MeleeAttack(this.x, this.y);
 		FlxG.state.add(meleeAttack);
+		txtGUI = new FlxText(0, 0, 64, "keep warm");
+		txtGUI.visible = false;
+		FlxG.state.add(txtGUI);
     }
 
     override public function update(elapsed:Float):Void
+	{
+		if (canMove)
+		{
+			controller();
+		}
+
+		if (isWorking)
+		{
+			workInProgress();
+		}
+
+		// is Alive?
+		if (healthPoint <= 0)
+		{
+			isAlive = false;
+		}
+		// change text GUI position
+		txtGUI.x = this.x - 16;
+		txtGUI.y = this.y - 16;
+
+		super.update(elapsed);
+	}
+
+	private function controller():Void
 	{
 		// Обновление флагов прыжка
 		if (isTouching(FLOOR))
 		{
 			canJump = true;
 		}
-        // Управление движением
-        if (FlxG.keys.pressed.LEFT)
-        {
-            acceleration.x = -drag.x;
-            this.facing = LEFT;
-        }
-        else if (FlxG.keys.pressed.RIGHT)
-        {
-            acceleration.x = drag.x;
-            this.facing = RIGHT;
-        }
-        else
-        {
-            acceleration.x = 0;
-        }
+		// Управление движением
+		if (FlxG.keys.pressed.LEFT)
+		{
+			acceleration.x = -drag.x;
+			this.facing = LEFT;
+		}
+		else if (FlxG.keys.pressed.RIGHT)
+		{
+			acceleration.x = drag.x;
+			this.facing = RIGHT;
+		}
+		else
+		{
+			acceleration.x = 0;
+		}
 
-        // Прыжок
+		// Прыжок
 		if (FlxG.keys.pressed.DOWN)
 		{
 			if (FlxG.keys.pressed.SPACE && FlxG.keys.pressed.DOWN)
@@ -152,21 +189,52 @@ class Player extends FlxSprite
 				animation.play("idle");
 			}
 		}
-		
 
 		if (meleeAttack.animation.finished)
 		{
 			meleeAttack.visible = false;
 		}
 
-		// is Alive?
-		if (healthPoint <= 0)
+		// активация объектов
+		if (FlxG.keys.pressed.E || FlxG.keys.pressed.ENTER)
 		{
-			isAlive = false;
+			// activate object of you nearby
+			if (typeActiveObject != 0)
+			{
+				switch typeActiveObject
+				{
+					case 0:
+					// nothing
+					case 1:
+						// bondire
+						activateBonfire();
+				}
+			}
 		}
+	}
 
-        super.update(elapsed);
-    }
+	private function activateBonfire():Void
+	{
+		canMove = false;
+		isWorking = true;
+	}
+
+	private function workInProgress():Void
+	{
+		// отсчет
+		currentWprkTime++;
+		// изменения камеры
+		FlxG.camera.zoom += 0.01;
+		// условие на выключение действия\анимации
+		if (currentWprkTime >= workTimer)
+		{
+			currentWprkTime = 0;
+			isWorking = false;
+			canMove = true;
+			FlxG.camera.zoom = 1;
+			FlxG.camera.flash(FlxColor.BLACK, 3);
+		}
+	}
 
 	public function onTrapCollision():Void
 	{
@@ -194,6 +262,20 @@ class Player extends FlxSprite
 			});
 			this.velocity.x = this.velocity.x * -1;
 			this.velocity.y = this.velocity.y * -1;
+		}
+	}
+	public function activateObject(_type:Int = 1)
+	{
+		typeActiveObject = _type;
+		txtGUI.visible = true;
+		switch _type
+		{
+			case 0:
+				// not any object
+				txtGUI.visible = false;
+			case 1:
+				// bonfire
+				txtGUI.text = "keep warm";
 		}
 	}
 }
