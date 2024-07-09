@@ -73,7 +73,21 @@ class PlayState extends FlxState
 		// creatLevel(roomAmount);
 
 		// Создаем игрока
-		player = new Player(playerStartPosition.x, playerStartPosition.y);
+		// если позиция не задана в файле Reg.hx, то берем из данных тайл карты
+		if (Reg.playerLastPosition.x == 0 && Reg.playerLastPosition.y == 0)
+		{
+			player = new Player(playerStartPosition.x, playerStartPosition.y);
+			player.velocity.y -= 10;
+			trace("player created at position:", player.getPosition());
+		}
+		else
+		{
+			player = new Player(Reg.playerLastPosition.x, Reg.playerLastPosition.y);
+			player.velocity.y -= 10;
+			player.y -= 16;
+			// player = new Player(289, 610);
+			trace("player created at position:", player.getPosition());
+		}
         add(player);
 
 		// даем врагам ссылки на игрока

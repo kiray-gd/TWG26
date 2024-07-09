@@ -22,7 +22,8 @@ class Player extends FlxSprite
     public var isWantFall = false;
 	public var canGetDamage = true;
 
-	public var healthPoint:Int = 3;
+	// public var healthPoint:Int = 3;
+	public var healthPoint:Int = 1;
 
 	private var damageTimer:FlxTimer;
 	private var flickerTime:Float = 2;
@@ -228,11 +229,14 @@ class Player extends FlxSprite
 		// условие на выключение действия\анимации
 		if (currentWprkTime >= workTimer)
 		{
+			Reg.playerLastPosition.set(this.x, this.y);
+			trace("Bonfire keeping player position at:", Reg.playerLastPosition);
 			currentWprkTime = 0;
 			isWorking = false;
 			canMove = true;
 			FlxG.camera.zoom = 1;
 			FlxG.camera.flash(FlxColor.BLACK, 3);
+			FlxG.switchState(new PlayState());
 		}
 	}
 
