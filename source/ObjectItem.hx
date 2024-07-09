@@ -8,6 +8,9 @@ import flixel.util.FlxTimer;
 class ObjectItem extends FlxSprite {
 	public var type:Int = 0;
 
+	// for keys and doors
+	public var special:Int = 0;
+
 	private var damageTimer:FlxTimer;
 	private var flickerTime:Float = 1;
 
@@ -19,6 +22,9 @@ class ObjectItem extends FlxSprite {
         loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
         animation.add("idle", [11], 1, false);
 		animation.add("bonfire", [12], 1, false);
+		animation.add("door", [9], 1, false);
+		animation.add("key", [13], 1, false);
+		animation.add("exit", [10], 1, false);
         animation.play("idle");
         // immovable = false;
         // gravity
@@ -45,7 +51,24 @@ class ObjectItem extends FlxSprite {
 				// bonfire
 				animation.play("bonfire");
 				canGetDamage = false;
+			case 2:
+				// door
+				animation.play("door");
+				canGetDamage = false;
+			case 3:
+				// key
+				animation.play("key");
+				canGetDamage = false;
+			case 4:
+				// exit
+				animation.play("exit");
+				canGetDamage = false;
 		}
+	}
+
+	public function setSpecial(_spec:Int = 0)
+	{
+		special = _spec;
 	}
 
 	public function onAttack():Void

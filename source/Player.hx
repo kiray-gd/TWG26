@@ -27,7 +27,9 @@ class Player extends FlxSprite
 
 	private var damageTimer:FlxTimer;
 	private var flickerTime:Float = 2;
-
+	// KOYOTE TIME
+	private var koyotTime:Int = 20;
+	private var currentKoyotTime:Int = 0;
 	// for attack
 	private var canAttack:Bool = true;
 	private var isAttack:Bool = false;
@@ -38,6 +40,7 @@ class Player extends FlxSprite
 	public var meleeAttack:MeleeAttack;
 	public var txtGUI:FlxText;
 	public var typeActiveObject:Int = 1; // 1 - bonfire
+	public var specActiveObject:Int = 0; // keys doors etc
 
 	private var isWorking:Bool = false;
 	private var workTimer:Int = 180;
@@ -104,6 +107,16 @@ class Player extends FlxSprite
 		if (isTouching(FLOOR))
 		{
 			canJump = true;
+			currentKoyotTime = 0;
+		}
+		else
+		{
+			currentKoyotTime++;
+			if (currentKoyotTime == koyotTime)
+			{
+				currentKoyotTime = 0;
+				canJump = false;
+			}
 		}
 		// Управление движением
 		if (FlxG.keys.pressed.LEFT)
@@ -124,7 +137,8 @@ class Player extends FlxSprite
 		// Прыжок
 		if (FlxG.keys.pressed.DOWN)
 		{
-			if (FlxG.keys.pressed.SPACE && FlxG.keys.pressed.DOWN)
+			// if (FlxG.keys.pressed.SPACE && FlxG.keys.pressed.DOWN)
+			if (FlxG.keys.pressed.SPACE)
 			{
 				isWantFall = true;
 			}
@@ -133,7 +147,7 @@ class Player extends FlxSprite
 				isWantFall = false;
 			}
 		}
-		else if (FlxG.keys.justPressed.SPACE && canJump && touching == FLOOR)
+		else if (FlxG.keys.justPressed.SPACE && canJump)
 		{
 			isJumping = true;
 			canJump = false;
@@ -209,6 +223,9 @@ class Player extends FlxSprite
 					case 1:
 						// bondire
 						activateBonfire();
+					case 3:
+						// key
+						Reg.keysArray.push(specActiveObject);
 				}
 			}
 		}
@@ -268,9 +285,10 @@ class Player extends FlxSprite
 			this.velocity.y = this.velocity.y * -1;
 		}
 	}
-	public function activateObject(_type:Int = 1)
+	public function activateObject(_type:Int = 1, spec:Int = 0)
 	{
 		typeActiveObject = _type;
+		specActiveObject = spec;
 		txtGUI.visible = true;
 		switch _type
 		{
@@ -280,6 +298,15 @@ class Player extends FlxSprite
 			case 1:
 				// bonfire
 				txtGUI.text = "keep warm";
+			case 2:
+				// door
+				txtGUI.text = "door closed";
+			case 3:
+				// key
+				txtGUI.text = "take key";
+			case 4:
+				// exit
+				txtGUI.text = "run away";
 		}
 	}
 }

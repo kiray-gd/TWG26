@@ -1,5 +1,7 @@
 package;
 
+import flixel.group.FlxGroup;
+import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.util.FlxSave;
 
@@ -48,4 +50,7 @@ class Reg
 	static public var save:FlxSave;
 
 	static public var playerLastPosition:FlxPoint = new FlxPoint(0, 0);
+	static public var keysArray:Array<Int> = [];
+	static public var keysSpriteGroup:FlxGroup = new FlxGroup();
+	static public var doorsSpriteGroup:FlxGroup = new FlxGroup();
 }

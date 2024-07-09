@@ -22,7 +22,7 @@ class Tile extends FlxSprite
     {
         super(X, Y);
         // loadGraphic("assets/images/player.png", true, 16, 16);
-        loadGraphic("assets/images/testTile.png", true, 16, 16);
+		loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
         animation.add("white", [0], 1, false);
         animation.add("default", [1], 1, false);
         animation.add("platform", [2], 1, false);
@@ -31,6 +31,7 @@ class Tile extends FlxSprite
 		animation.add("trapUp", [6], 1, false);
 		animation.add("trapRight", [7], 1, false);
 		animation.add("temporaryPlatform", [8], 1, false);
+		animation.add("fakewall", [15], 1, false);
         // this.addAnimation("run", [0, 1, 2, 3], 10, true);
         // addAnimation("idle", [0], 0, false);
         animation.play("default");
@@ -104,6 +105,8 @@ class Tile extends FlxSprite
 			case 8:
 				animation.play("temporaryPlatform");
 				isTemporary = true;
+			case 9:
+				animation.play("fakewall");
         }
             
 

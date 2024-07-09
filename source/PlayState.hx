@@ -155,6 +155,7 @@ class PlayState extends FlxState
 		checkEnemyAlive();
 		checkPlayerAlive();
 		checkObjectsNearby();
+		checkKeysAndDoors();
 		// Контроль числа партиклов, чтобы комп не умер
 		if (particleGroup.length > 100)
 		{
@@ -314,12 +315,28 @@ class PlayState extends FlxState
 			if (FlxMath.distanceBetween(player, cast(everyTile, FlxSprite)) < tileSize * visionMax)
 			{
 				everyTile.visible = true;
+				// work with fake walls
+				// 9 - fake wall
+				if (cast(everyTile, Tile).type == 9)
+				{
+					if (FlxMath.distanceBetween(player, cast(everyTile, FlxSprite)) < tileSize)
+					{
+						cast(everyTile, Tile).alpha = 0.2;
+					}
+				}
 			}
 			else
 			{
 				everyTile.visible = false;
+				// work with fake walls
+				// 9 - fake wall
+				if (cast(everyTile, Tile).type == 9)
+				{
+					cast(everyTile, Tile).alpha = 1;
+				}
 			}
 		}
+
 		// hide enemys
 		for (everyEnemy in enemyGroup)
 		{
@@ -385,7 +402,7 @@ class PlayState extends FlxState
 			// if (FlxMath.distanceBetween(player, cast(itemObject, FlxSprite)) < 30)
 			if (Math.abs(player.x + 4 - _item.x) < 24 && Math.abs(player.y - _item.y) < 8)
 			{
-				player.activateObject(cast(_item, ObjectItem).type);
+				player.activateObject(cast(_item, ObjectItem).type, cast(_item, ObjectItem).special);
 				isAnyObjectHere = true;
 				// continue;
 			}
@@ -393,6 +410,30 @@ class PlayState extends FlxState
 		if (!isAnyObjectHere)
 		{
 			player.activateObject(0);
+		}
+	}
+
+	private function checkKeysAndDoors()
+	{
+		if (Reg.keysArray.length > 0)
+		{
+			for (index in Reg.keysArray)
+			{
+				// keys
+				for (obj in itemGroup)
+				{
+					if (cast(obj, ObjectItem).special == index && cast(obj, ObjectItem).type == 3)
+					{
+						obj.kill();
+						itemGroup.remove(obj, true);
+					}
+					if (cast(obj, ObjectItem).special == index && cast(obj, ObjectItem).type == 2)
+					{
+						obj.kill();
+						itemGroup.remove(obj, true);
+					}
+				}
+			}
 		}
 	}
 
@@ -487,12 +528,21 @@ class PlayState extends FlxState
 					case 8:
 						// temporary platform
 						creatWall(j, i, true, FlxDirectionFlags.UP, 8);
+					case 9:
+						// door
+						creatObject(j, i, true, FlxDirectionFlags.ANY, 2);
+					case 10:
+						// exit
+						creatObject(j, i, true, FlxDirectionFlags.NONE, 4);
 					case 11:
 						// разрушаемые стены (пока в виде ящиков)
 						creatObject(j, i, true, FlxDirectionFlags.ANY, 0);
 					case 12:
 						// bonfire
 						creatObject(j, i, true, FlxDirectionFlags.NONE, 1);
+					case 13:
+						// key
+						creatObject(j, i, true, FlxDirectionFlags.NONE, 3, 0);
 					case 14:
 						// player start position
 						// playerStartPosition.set(j * tileSize, i * tileSize);
@@ -501,6 +551,9 @@ class PlayState extends FlxState
 							Reg.playerLastPosition.set(j * tileSize, i * tileSize);
 						}
 						trace("player start position:", playerStartPosition);
+					case 15:
+						// fake wall
+						creatWall(j, i, true, FlxDirectionFlags.NONE, 9);
 				}
 			}
 		}
@@ -527,15 +580,27 @@ class PlayState extends FlxState
 		enemyGroup.add(tempEnemy);
 	}
 
-	private function creatObject(jPos:Int = 0, iPos:Int = 0, isImmovable:Bool = true, dir:FlxDirectionFlags = FlxDirectionFlags.ANY, type:Int = 0)
+	private function creatObject(jPos:Int = 0, iPos:Int = 0, isImmovable:Bool = true, dir:FlxDirectionFlags = FlxDirectionFlags.ANY, type:Int = 0, spec:Int = 0)
 	{
-		var tempObj:ObjectItem = new ObjectItem(0, 0);
-		tempObj.x = jPos * 16;
-		tempObj.y = iPos * 16;
+		var tempObj:ObjectItem = new ObjectItem(jPos * 16, iPos * 16);
+		// tempObj.x = jPos * 16;
+		// tempObj.y = iPos * 16;
 		tempObj.immovable = isImmovable;
 		tempObj.setType(type);
+		tempObj.setSpecial(spec);
 		tempObj.allowCollisions = dir;
 		itemGroup.add(tempObj);
+		if (type == 13)
+		{
+			// if keys
+			Reg.keysSpriteGroup.add(tempObj);
+		}
+		else if (type == 9)
+		{
+			// if door
+			Reg.doorsSpriteGroup.add(tempObj);
+		}
+
 	}
 
 	private function setSourceToEnemys()
