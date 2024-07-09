@@ -120,7 +120,7 @@ class PlayState extends FlxState
 		// FlxG.overlap(player, enemyGroup, onCollidePlayerEnemy);
 		FlxG.collide(player, enemyGroup, onCollidePlayerEnemy);
 		// Обработка коллизий мобов и стен
-		FlxG.collide(enemyGroup, tileMapGroup);
+		FlxG.collide(enemyGroup, tileMapGroup, onColEnemyWalls);
 		// Обработка коллайдов игрока и объектов
 		FlxG.collide(player, itemGroup, onCollidePlayerItems);
 		// ОБработка коллайдов врагов и объектов
@@ -228,6 +228,43 @@ class PlayState extends FlxState
 			}
 			}
 		}
+
+	private function onColEnemyWalls(enemGroup:FlxObject, sprGroup:FlxObject):Void
+	{
+		var _tile:Tile = cast(sprGroup, Tile);
+		if ((_tile.getType()) >= 4 && (_tile.getType()) <= 7)
+		{
+			// получение урона при коллизии с тайлом кольями
+			// trace("получение урона при коллизии с тайлом кольями");
+			// FlxG.camera.shake(0.05, 0.5);
+			var _enemy:Enemy = cast(enemGroup, Enemy);
+			_enemy.onTrapCollision();
+
+			if (_enemy.touching == FlxDirectionFlags.UP)
+			{
+				_enemy.velocity.y += 300;
+			}
+			else if (_enemy.touching == FlxDirectionFlags.RIGHT)
+			{
+				_enemy.velocity.x -= 300;
+			}
+			else if (_enemy.touching == FlxDirectionFlags.DOWN)
+			{
+				_enemy.velocity.y -= 300;
+			}
+			else if (_enemy.touching == FlxDirectionFlags.LEFT)
+			{
+				_enemy.velocity.x += 300;
+			}
+		}
+		else if ((_tile.getType()) == 8)
+		{
+			_tile.wasTouched = true;
+		}
+	}
+
+			
+		
 
 	private function onCollidePlayerEnemy(playerObj:FlxObject, sprGroup:FlxObject):Void
 	{
@@ -515,8 +552,8 @@ class PlayState extends FlxState
 						// platform
 						creatWall(j, i, true, FlxDirectionFlags.UP, 2);
 							case 3:
-						// enemy spowner
-						creatEnemy(j, i, false);
+						// enemy skull
+						creatEnemy(j, i, false, 0);
 					case 4:
 						creatWall(j, i, true, FlxDirectionFlags.ANY, 4);
 					case 5:
@@ -554,6 +591,12 @@ class PlayState extends FlxState
 					case 15:
 						// fake wall
 						creatWall(j, i, true, FlxDirectionFlags.NONE, 9);
+					case 16:
+						// eye enemy
+						creatEnemy(j, i, false, 1);
+					case 17:
+						// runner enemy
+						creatEnemy(j, i, false, 2);
 				}
 			}
 		}
@@ -571,12 +614,13 @@ class PlayState extends FlxState
 		tempTile.setType(_type);
 		tileMapGroup.add(tempTile);
 	}
-	private function creatEnemy(jPos:Int = 0, iPos:Int = 0, isImmovable:Bool = true):Void
+	private function creatEnemy(jPos:Int = 0, iPos:Int = 0, isImmovable:Bool = true, _type:Int = 0):Void
 	{
 		var tempEnemy:Enemy = new Enemy(jPos * 16, iPos * 16);
 		// tempEnemy.x = jPos * 16;
 		// tempEnemy.y = iPos * 16;
 		tempEnemy.immovable = isImmovable;
+		tempEnemy.setType(_type);
 		enemyGroup.add(tempEnemy);
 	}
 

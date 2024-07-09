@@ -229,6 +229,12 @@ class Player extends FlxSprite
 				}
 			}
 		}
+		// тестовые кнопки
+		// суицид
+		if (FlxG.keys.pressed.S)
+		{
+			healthPoint -= healthPoint;
+		}
 	}
 
 	private function activateBonfire():Void

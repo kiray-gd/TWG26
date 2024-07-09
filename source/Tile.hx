@@ -11,7 +11,7 @@ class Tile extends FlxSprite
 	public var isTemporary:Bool = false;
 	public var wasTouched:Bool = false;
 
-	private var secondsToDisappear:Float = 3;
+	private var secondsToDisappear:Float = 1;
 	private var timerToDie:FlxTimer;
 
 	private var isRefreshing = false;
