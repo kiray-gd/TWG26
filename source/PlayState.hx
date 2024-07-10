@@ -21,10 +21,13 @@ class PlayState extends FlxState
 	// область видимости игрока
 	private var visionMax:Int = 6;
 
+	// для видимости босса (он всегда один на уровне)
+	private var boss:Boss;
 
 	//groups wallbounds
 	private var tileMapGroup:FlxGroup;
 	private var enemyGroup:FlxGroup;
+	private var bossGroup:FlxGroup;
 	private var itemGroup:FlxGroup;
 	// particle
 	private var particleGroup:FlxGroup;
@@ -64,6 +67,7 @@ class PlayState extends FlxState
 		//init groups
 		tileMapGroup = new FlxGroup();
 		add(tileMapGroup);
+		// группа врагов
 		enemyGroup = new FlxGroup();
 		add(enemyGroup);
 		itemGroup = new FlxGroup();
@@ -81,20 +85,6 @@ class PlayState extends FlxState
 		player = new Player(playerStartPosition.x, playerStartPosition.y);
 		player.velocity.y -= 10;
 		trace("player created at position:", player.getPosition());
-		// if (Reg.playerLastPosition.x == 0 && Reg.playerLastPosition.y == 0)
-		// {
-		// 	player = new Player(playerStartPosition.x, playerStartPosition.y);
-		// 	player.velocity.y -= 10;
-		// 	trace("player created at position:", player.getPosition());
-		// }
-		// else
-		// {
-		// 	player = new Player(Reg.playerLastPosition.x, Reg.playerLastPosition.y);
-		// 	player.velocity.y -= 10;
-		// 	player.y -= 16;
-		// 	// player = new Player(289, 610);
-		// 	trace("player created at position:", player.getPosition());
-		// }
         add(player);
 
 		// даем врагам ссылки на игрока
@@ -109,32 +99,43 @@ class PlayState extends FlxState
 		// FlxG.camera.setPosition(50, 50);
 		// trace(FlxG.camera.x, FlxG.camera.y);
 		restartTimer = new FlxTimer();
+		// обновление области коллизий
+		// v0.2 изменение, поскольку враги вне области видимости игрока проваливались сквозь тайлы
+		FlxG.worldBounds.setSize(1024, 1024);
     }
 
 	override public function update(elapsed:Float):Void
 		{
-		super.update(elapsed);
+		// super.update(elapsed);
 		// Обработка коллизий игрока и стен
 		FlxG.collide(player, tileMapGroup, onCollideFunction);
-		// Обработка коллизий игрока и мобов
+		// Обработка коллизий игрока и мобов и босса
 		// FlxG.overlap(player, enemyGroup, onCollidePlayerEnemy);
 		FlxG.collide(player, enemyGroup, onCollidePlayerEnemy);
-		// Обработка коллизий мобов и стен
-		FlxG.collide(enemyGroup, tileMapGroup, onColEnemyWalls);
-		// Обработка коллайдов игрока и объектов
-		FlxG.collide(player, itemGroup, onCollidePlayerItems);
-		// ОБработка коллайдов врагов и объектов
-		FlxG.collide(enemyGroup, itemGroup);
-		// Обработка коллайдов объектов и стен
-		// FlxG.collide(itemGroup, tileMapGroup, onCollideItemsWall);
-		// Обработка коллайдов объектов и стен
-		FlxG.collide(itemGroup, itemGroup);
-		// Обработка оверлапов крови и стен
-		FlxG.collide(particleGroup, tileMapGroup, onOverlapParticleWall);
+		FlxG.collide(player, boss, onCollidePlayerBoss);
 		// Обработка оверлапа мили атаки игрока и врагов
 		FlxG.overlap(player.meleeAttack, enemyGroup, onMeleeAttackOvelap);
 		// Обработка оверлапа мили атаки и объектов
 		FlxG.overlap(player.meleeAttack, itemGroup, onMeleeAttackItemOvelap);
+		// Обработка коллайдов игрока и объектов
+		// FlxG.collide(player, itemGroup, onCollidePlayerItems);
+		FlxG.collide(player, itemGroup);
+
+		// обработка коллизий стен и босса
+		// FlxG.collide(boss, tileMapGroup, onColBossWalls);
+		FlxG.collide(boss, tileMapGroup);
+		FlxG.collide(boss, itemGroup);
+
+		// Обработка коллизий мобов и стен
+		FlxG.collide(enemyGroup, tileMapGroup, onColEnemyWalls);
+		// ОБработка коллайдов врагов и объектов
+		FlxG.collide(enemyGroup, itemGroup);
+
+		// Обработка коллайдов объектов и стен
+		// FlxG.collide(itemGroup, itemGroup);
+		// Обработка оверлапов крови и стен
+		FlxG.collide(particleGroup, tileMapGroup, onOverlapParticleWall);
+
 
 			// FlxG.collide(player, tileMapGroup, function(player:FlxObject, tilemap:FlxObject):Void {
 			// 	// if (player.touching == FlxObject.LEFT || player.touching == FlxObject.RIGHT)
@@ -149,8 +150,7 @@ class PlayState extends FlxState
 		// FlxG.worldBounds.setPosition(player.x - 320, player.y - 240);
 		// FlxG.worldBounds.setSize(640, 480);
 		// FlxG.worldBounds.setSize(320, 240);
-		// v0.2 изменение, поскольку враги вне области видимости игрока проваливались сквозь тайлы
-		FlxG.worldBounds.setSize(1024, 1024);
+
 
 		// обновление области видимости игрока
 		visionRegionUpdate();
@@ -174,7 +174,7 @@ class PlayState extends FlxState
 		}
 	
 
-
+		super.update(elapsed);
 
 		}
 
@@ -232,6 +232,7 @@ class PlayState extends FlxState
 			}
 		}
 
+	// Collide function Enemys and Walls
 	private function onColEnemyWalls(enemGroup:FlxObject, sprGroup:FlxObject):Void
 	{
 		var _tile:Tile = cast(sprGroup, Tile);
@@ -266,19 +267,45 @@ class PlayState extends FlxState
 		}
 	}
 
-			
-		
+	// Collide function Boss and Walls
+	private function onColBossWalls(boss:Boss, sprGroup:FlxObject):Void
+	{
+		trace("BOSS");
+		var _tile:Tile = cast(sprGroup, Tile);
+		if ((_tile.getType()) >= 4 && (_tile.getType()) <= 7)
+		{
+			// получение урона при коллизии с тайлом кольями
+			// trace("получение урона при коллизии с тайлом кольями");
+			// FlxG.camera.shake(0.05, 0.5);
 
+			boss.onTrapCollision();
+
+			if (boss.touching == FlxDirectionFlags.UP)
+			{
+				boss.velocity.y += 300;
+			}
+			else if (boss.touching == FlxDirectionFlags.RIGHT)
+			{
+				boss.velocity.x -= 300;
+			}
+			else if (boss.touching == FlxDirectionFlags.DOWN)
+			{
+				boss.velocity.y -= 300;
+			}
+			else if (boss.touching == FlxDirectionFlags.LEFT)
+			{
+				boss.velocity.x += 300;
+			}
+		}
+		else if ((_tile.getType()) == 8)
+		{
+			_tile.wasTouched = true;
+		}
+	}
+
+	// перекрытия игрока и врагов
 	private function onCollidePlayerEnemy(playerObj:FlxObject, sprGroup:FlxObject):Void
 	{
-		// if (player.touching == FlxDirectionFlags.DOWN)
-		// {
-		// 	(cast sprGroup : FlxObject).kill();
-		// 	creatBlood(sprGroup.x + sprGroup.width / 2, sprGroup.y + sprGroup.height / 2);
-		// 	player.velocity.y -= 400;
-		// 	// player.acceleration.y = -1000;
-		// }
-		// test for overlap method
 		if (playerObj.y < sprGroup.y - 8)
 		{
 			if (playerObj.velocity.y > 0)
@@ -305,15 +332,39 @@ class PlayState extends FlxState
 		}
 	}
 
-	private function onCollidePlayerItems(player:FlxObject, sprGroup:FlxObject)
+	// перекрытия игрока и босса
+	private function onCollidePlayerBoss(playerObj:Player, bossObj:Boss):Void
 	{
-		// some logic
+		if (playerObj.y < bossObj.y - 8)
+		{
+			if (playerObj.velocity.y > 0)
+			{
+				playerObj.velocity.y = -300;
+			}
+			else
+			{
+				playerObj.velocity.y -= 300;
+				// player.acceleration.y = -1000;
+			}
+			// creatBlood(sprGroup.x + sprGroup.width / 2, sprGroup.y + sprGroup.height / 2);
+			// (cast sprGroup : FlxObject).kill();
+			bossObj.onAttack(player.x, player.y, 2);
+			// sprGroup.kill();
+			// enemyGroup.remove(sprGroup, true);
+		}
+		else
+		{
+			if (bossObj.canGetDamage)
+			{
+				playerObj.onEnemyHit();
+			}
+		}
 	}
 
-	private function onCollideItemsWall(itemsObj:FlxObject, sprGroup:FlxObject)
-	{
-		// some logic
-	}
+	// private function onCollidePlayerItems(player:FlxObject, sprGroup:FlxObject)
+	// {
+	// 	// some logic
+	// }
 
 	private function onOverlapParticleWall(particle:FlxObject, sprGroup:FlxObject):Void
 	{
@@ -625,6 +676,9 @@ class PlayState extends FlxState
 					case 21:
 						// invisible wall
 						creatWall(j, i, true, FlxDirectionFlags.ANY, 10);
+					case 26:
+						// boss 1
+						creatBoss(j, i, false, 1);
 				}
 			}
 		}
@@ -651,6 +705,18 @@ class PlayState extends FlxState
 		tempEnemy.setType(_type);
 		enemyGroup.add(tempEnemy);
 	}
+
+	// создаем босса
+	private function creatBoss(jPos:Int = 0, iPos:Int = 0, isImmovable:Bool = false, _type:Int = 1):Void
+	{
+		boss = new Boss(jPos * 16, iPos * 16);
+		boss.immovable = isImmovable;
+		boss.setType(_type);
+		boss.allowCollisions = ANY;
+		add(boss);
+		// enemyGroup.add(boss);
+	}
+
 
 	private function creatObject(jPos:Int = 0, iPos:Int = 0, isImmovable:Bool = true, dir:FlxDirectionFlags = FlxDirectionFlags.ANY, type:Int = 0, spec:Int = 0)
 	{
@@ -681,5 +747,6 @@ class PlayState extends FlxState
 		{
 			cast(enemyElement, Enemy).setPlayerSource(player);
 		}
+		boss.setPlayerSource(player);
 	}
 }
