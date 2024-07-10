@@ -164,6 +164,7 @@ class Enemy extends FlxSprite
 							if (velocity.x < 0)
 							{
 								velocity.x = velocity.x * 0.5;
+								acceleration.x = 0;
 							}
 							acceleration.x += 100;
 							this.facing = LEFT;
@@ -173,6 +174,7 @@ class Enemy extends FlxSprite
 							if (velocity.x > 0)
 							{
 								velocity.x = velocity.x * 0.5;
+								acceleration.x = 0;
 							}
 							acceleration.x -= 100;
 							this.facing = RIGHT;
@@ -185,7 +187,7 @@ class Enemy extends FlxSprite
 					isMoving = false;
 					// decrase velocity
 					acceleration.x = 0;
-					acceleration.y = 0;
+					// acceleration.y = 0;
 				}
 			case 3:
 				// spider logic
@@ -263,6 +265,7 @@ class Enemy extends FlxSprite
 							if (velocity.x < 0)
 							{
 								velocity.x = 0;
+								acceleration.x = 0;
 							}
 							acceleration.x += 24;
 							this.facing = LEFT;
@@ -272,6 +275,7 @@ class Enemy extends FlxSprite
 							if (velocity.x > 0)
 							{
 								velocity.x = 0;
+								acceleration.x = 0;
 							}
 
 							acceleration.x -= 24;
@@ -295,7 +299,7 @@ class Enemy extends FlxSprite
 					isMoving = false;
 					// decrase velocity
 					acceleration.x = 0;
-					acceleration.y = 0;
+					// acceleration.y = 0;
 				}
 		}
 		
