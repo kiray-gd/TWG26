@@ -145,9 +145,12 @@ class PlayState extends FlxState
 			// });
 
 		// обновление области коллизий по положению игрока
-		FlxG.worldBounds.setPosition(player.x - 320, player.y - 240);
-		FlxG.worldBounds.setSize(640, 480);
+		// v0,1
+		// FlxG.worldBounds.setPosition(player.x - 320, player.y - 240);
+		// FlxG.worldBounds.setSize(640, 480);
 		// FlxG.worldBounds.setSize(320, 240);
+		// v0.2 изменение, поскольку враги вне области видимости игрока проваливались сквозь тайлы
+		FlxG.worldBounds.setSize(1024, 1024);
 
 		// обновление области видимости игрока
 		visionRegionUpdate();
@@ -415,7 +418,11 @@ class PlayState extends FlxState
 			var tempEnemySpr:Enemy = cast(enem, Enemy);
 			if (!tempEnemySpr.isAlive)
 			{
-				creatBlood(tempEnemySpr.x + tempEnemySpr.width / 2, tempEnemySpr.y + tempEnemySpr.height / 2);
+				if (tempEnemySpr.type != 4)
+				{
+					creatBlood(tempEnemySpr.x + tempEnemySpr.width / 2, tempEnemySpr.y + tempEnemySpr.height / 2);
+				}
+				
 				tempEnemySpr.kill();
 				enemyGroup.remove(enem, true);
 			}
@@ -605,6 +612,15 @@ class PlayState extends FlxState
 					case 17:
 						// runner enemy
 						creatEnemy(j, i, false, 2);
+					case 18:
+						// spider enemy
+						creatEnemy(j, i, false, 3);
+					case 19:
+						// ghost enemy
+						creatEnemy(j, i, false, 4);
+					case 20:
+						// serpent enemy
+						creatEnemy(j, i, false, 5);
 				}
 			}
 		}
