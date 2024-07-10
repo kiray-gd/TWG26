@@ -226,6 +226,13 @@ class Player extends FlxSprite
 					case 3:
 						// key
 						Reg.keysArray.push(specActiveObject);
+					case 4:
+						// exit, escape, run away
+						if (!Reg.bossAlive[Reg.currentMap - 1])
+						{
+							// txtGUI.text = "run away";
+							FlxG.switchState(new PlayState());
+						}
 				}
 			}
 		}
@@ -312,7 +319,15 @@ class Player extends FlxSprite
 				txtGUI.text = "take key";
 			case 4:
 				// exit
-				txtGUI.text = "run away";
+				if (!Reg.bossAlive[Reg.currentMap - 1])
+				{
+					txtGUI.text = "run away";
+				}
+				else
+				{
+					txtGUI.text = "I can't leave";
+				}
+				
 		}
 	}
 }

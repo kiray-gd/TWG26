@@ -71,8 +71,8 @@ class PlayState extends FlxState
 		particleGroup = new FlxGroup();
 		add(particleGroup);
 
-		//Формирование одного этажа
-		creatingMap(1);
+		// Загрузка уровня
+		creatingMap(Reg.currentMap);
 		// creatLevel(roomAmount);
 
 		// Создаем игрока
@@ -532,7 +532,8 @@ class PlayState extends FlxState
 		// var csvData:String = File.getContent("assets/data/room-004.csv");
 		// var csvData:String = File.getContent("assets/data/room-004.csv");
 		// var dataMapString:String = "assets/data/" + _which + ".csv";
-		var dataMapString:String = "assets/data/map1.csv";
+		// var dataMapString:String = "assets/data/map1.csv";
+		var dataMapString:String = "assets/data/map" + _which + ".csv";
 		var csvData:String = File.getContent(dataMapString);
 			// Функция для преобразования CSV данных в двумерный массив
 			var rows:Array<String> = csvData.split("\n");
@@ -621,6 +622,9 @@ class PlayState extends FlxState
 					case 20:
 						// serpent enemy
 						creatEnemy(j, i, false, 5);
+					case 21:
+						// invisible wall
+						creatWall(j, i, true, FlxDirectionFlags.ANY, 10);
 				}
 			}
 		}

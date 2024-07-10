@@ -53,4 +53,8 @@ class Reg
 	static public var keysArray:Array<Int> = [];
 	static public var keysSpriteGroup:FlxGroup = new FlxGroup();
 	static public var doorsSpriteGroup:FlxGroup = new FlxGroup();
+	// boss alive
+	static public var bossAlive:Array<Bool> = [true, false, false];
+	// текущий уровень
+	static public var currentMap:Int = 1;
 }

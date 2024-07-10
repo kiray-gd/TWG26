@@ -113,7 +113,7 @@ class Enemy extends FlxSprite
 					isMoving = false;
 					// decrase velocity
 					acceleration.x = 0;
-					acceleration.y = 0;
+					// acceleration.y = 0;
 				}
 			case 1:
 				// eye logic
@@ -344,7 +344,7 @@ class Enemy extends FlxSprite
 			case 3:
 				// spider
 				acceleration.set(0, 0);
-				healthPoint = 2;
+				healthPoint = 1;
 				price = 100;
 				visibilityArea = 300;
 				maxVelocity.set(100, 100);
@@ -353,7 +353,7 @@ class Enemy extends FlxSprite
 			case 4:
 				// ghost
 				acceleration.set(0, 0);
-				healthPoint = 1;
+				healthPoint = 2;
 				price = 20;
 				visibilityArea = 200;
 				maxVelocity.set(5, 5);

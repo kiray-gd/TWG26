@@ -107,6 +107,11 @@ class Tile extends FlxSprite
 				isTemporary = true;
 			case 9:
 				animation.play("fakewall");
+			case 10:
+				// invisible wall
+				animation.play("default");
+				alpha = 0;
+
         }
             
 
