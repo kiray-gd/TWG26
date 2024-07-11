@@ -60,4 +60,5 @@ class Reg
 	// weapons and gems
 	static public var weaponsAndGems:Array<Bool> = [false, false, false, false, false, false];
 	// 0 - sword
+	static public var gems:Array<Bool> = [false, false, false, false, false];
 }

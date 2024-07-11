@@ -88,7 +88,9 @@ class Boss extends FlxSprite
 		{
 			case 1:
 				// blind knight logic
-				if (FlxMath.distanceBetween(this, playerSource) < visibilityArea && this.y + 64 > playerSource.y)
+				// Math.abs(this.y - playerSource.y) < 20
+				// if (FlxMath.distanceBetween(this, playerSource) < visibilityArea && this.y + 64 > playerSource.y)
+				if (FlxMath.distanceBetween(this, playerSource) < visibilityArea && Math.abs(this.y - playerSource.y) < 60)
 				{
 					// игрок виден
 					currentTimer1++;
@@ -155,14 +157,15 @@ class Boss extends FlxSprite
 					}
 					else
 					{
-						// перемещение если не задействованы таймеры движения
-						isMoving = true;
-						if (animation.finished)
-						{
-							animation.play("moving");
-						}
+						// animation.play("idle");
 						if (Math.abs(this.y - playerSource.y) < 20)
 						{
+							// перемещение если не задействованы таймеры движения
+							isMoving = true;
+							if (animation.finished)
+							{
+								animation.play("moving");
+							}
 							if (this.x < playerSource.x)
 							{
 								if (velocity.x < 0)
@@ -185,6 +188,16 @@ class Boss extends FlxSprite
 								this.facing = RIGHT;
 							}
 						}
+						else
+						{
+							// игрок вне области видимости по высоте
+							if (animation.finished)
+							{
+								animation.play("idle");
+								isMoving = false;
+							}
+							
+						}
 						// прыжок если близко к игроку
 						if (FlxMath.distanceBetween(this, playerSource) < 64 && canJump)
 						{
@@ -197,14 +210,14 @@ class Boss extends FlxSprite
 						}
 					}
 				}
-					else
-					{
+				else
+				{
 					// игрок вне области видимости
-						animation.play("idle");
-						isMoving = false;
-						// decrase velocity
-						acceleration.x = 0;
-						// acceleration.y = 0;
+					animation.play("idle");
+					isMoving = false;
+					// decrase velocity
+					acceleration.x = 0;
+					// acceleration.y = 0;
 					currentTimer1 = 0;
 					currentTimer2 = 0;
 				}
@@ -254,8 +267,8 @@ class Boss extends FlxSprite
 			case 1:
 				// blind knight
 				acceleration.set(0, 600);
-				healthPoint = 2;
-				// healthPoint = 16;
+				// healthPoint = 2;
+				healthPoint = 16;
 				price = 10000;
 				visibilityArea = 300;
 				maxVelocity.set(96, 600);

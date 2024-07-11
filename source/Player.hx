@@ -239,6 +239,11 @@ class Player extends FlxSprite
 							// txtGUI.text = "run away";
 							FlxG.switchState(new PlayState());
 						}
+					case 5:
+						// GEM
+						Reg.gems[specActiveObject - 1] = true;
+						trace(Reg.gems);
+
 				}
 			}
 		}
@@ -338,6 +343,11 @@ class Player extends FlxSprite
 				{
 					txtGUI.text = "I can't leave";
 				}
+			case 5:
+				// gey
+				txtGUI.text = "take GEM";
+				// Reg.gems[spec - 1] = true;
+				// trace(Reg.gems);
 				
 		}
 	}

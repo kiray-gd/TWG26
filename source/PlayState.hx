@@ -134,7 +134,7 @@ class PlayState extends FlxState
 		FlxG.overlap(player.meleeAttack, itemGroup, onMeleeAttackItemOvelap);
 		// Обработка коллайдов игрока и объектов
 		// FlxG.collide(player, itemGroup, onCollidePlayerItems);
-		FlxG.collide(player, itemGroup);
+		// FlxG.collide(player, itemGroup);
 
 
 		FlxG.collide(boss, itemGroup);
@@ -171,6 +171,7 @@ class PlayState extends FlxState
 		checkPlayerAlive();
 		checkObjectsNearby();
 		checkKeysAndDoors();
+		checkGems();
 		// Контроль числа партиклов, чтобы комп не умер
 		if (particleGroup.length > 100)
 		{
@@ -620,6 +621,23 @@ class PlayState extends FlxState
 		}
 	}
 
+	private function checkGems():Void
+	{
+		// find gems
+		for (obj in itemGroup)
+		{
+			if (cast(obj, ObjectItem).type == 5)
+			{
+				if (Reg.gems[cast(obj, ObjectItem).special - 1])
+				{
+					// удаляем гем если он был подобран
+					obj.kill();
+					itemGroup.remove(obj, true);
+				}
+			}
+		}
+	}
+
 	// прочее
 	private function gameOver():Void
 	{
@@ -713,8 +731,8 @@ class PlayState extends FlxState
 						// temporary platform
 						creatWall(j, i, true, FlxDirectionFlags.UP, 8);
 					case 9:
-						// door
-						creatObject(j, i, true, FlxDirectionFlags.ANY, 2);
+						// door 1
+						creatObject(j, i, true, FlxDirectionFlags.ANY, 2, 1);
 					case 10:
 						// exit
 						creatObject(j, i, true, FlxDirectionFlags.NONE, 4);
@@ -726,7 +744,7 @@ class PlayState extends FlxState
 						creatObject(j, i, true, FlxDirectionFlags.NONE, 1);
 					case 13:
 						// key
-						creatObject(j, i, true, FlxDirectionFlags.NONE, 3, 0);
+						creatObject(j, i, true, FlxDirectionFlags.NONE, 3, 1);
 					case 14:
 						// player start position
 						// playerStartPosition.set(j * tileSize, i * tileSize);
@@ -756,10 +774,37 @@ class PlayState extends FlxState
 					case 21:
 						// invisible wall
 						creatWall(j, i, true, FlxDirectionFlags.ANY, 10);
+					case 22:
+						// key type 2
+						creatObject(j, i, true, FlxDirectionFlags.NONE, 3, 2);
+					case 23:
+						// key type 3
+						creatObject(j, i, true, FlxDirectionFlags.NONE, 3, 3);
+					case 24:
+						// door 2
+						creatObject(j, i, true, FlxDirectionFlags.ANY, 2, 2);
+					case 25:
+						// door 3
+						creatObject(j, i, true, FlxDirectionFlags.ANY, 2, 3);
 					case 26:
 						// boss 1
 						creatBoss(j, i, false, 1);
 						isBossSpawned = true;
+					case 32:
+						// gem 1
+						creatObject(j, i, true, FlxDirectionFlags.NONE, 5, 1);
+					case 33:
+						// gem 2
+						creatObject(j, i, true, FlxDirectionFlags.NONE, 5, 2);
+					case 34:
+						// gem 3
+						creatObject(j, i, true, FlxDirectionFlags.NONE, 5, 3);
+					case 35:
+						// gem 4
+						creatObject(j, i, true, FlxDirectionFlags.NONE, 5, 4);
+					case 36:
+						// gem 5
+						creatObject(j, i, true, FlxDirectionFlags.NONE, 5, 5);
 				}
 			}
 		}
@@ -803,22 +848,22 @@ class PlayState extends FlxState
 	}
 
 
-	private function creatObject(jPos:Int = 0, iPos:Int = 0, isImmovable:Bool = true, dir:FlxDirectionFlags = FlxDirectionFlags.ANY, type:Int = 0, spec:Int = 0)
+	private function creatObject(jPos:Int = 0, iPos:Int = 0, isImmovable:Bool = true, dir:FlxDirectionFlags = FlxDirectionFlags.ANY, type:Int = 0, spec:Int = 1)
 	{
 		var tempObj:ObjectItem = new ObjectItem(jPos * 16, iPos * 16);
 		// tempObj.x = jPos * 16;
 		// tempObj.y = iPos * 16;
 		tempObj.immovable = isImmovable;
-		tempObj.setType(type);
-		tempObj.setSpecial(spec);
+		tempObj.setTypeAndSpec(type, spec);
+		// tempObj.setSpecial(spec);
 		tempObj.allowCollisions = dir;
 		itemGroup.add(tempObj);
-		if (type == 13)
+		if (type == 3 || type == 22 || type == 23)
 		{
 			// if keys
 			Reg.keysSpriteGroup.add(tempObj);
 		}
-		else if (type == 9)
+		else if (type == 9 || type == 24 || type == 25)
 		{
 			// if door
 			Reg.doorsSpriteGroup.add(tempObj);

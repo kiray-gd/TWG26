@@ -22,9 +22,19 @@ class ObjectItem extends FlxSprite {
         loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
         animation.add("idle", [11], 1, false);
 		animation.add("bonfire", [12], 1, false);
-		animation.add("door", [9], 1, false);
-		animation.add("key", [13], 1, false);
+		animation.add("door1", [9], 1, false);
+		animation.add("door2", [24], 1, false);
+		animation.add("door3", [25], 1, false);
+		animation.add("key1", [13], 1, false);
+		animation.add("key2", [22], 1, false);
+		animation.add("key3", [23], 1, false);
 		animation.add("exit", [10], 1, false);
+		animation.add("gem1", [32], 1, false);
+		animation.add("gem2", [33], 1, false);
+		animation.add("gem3", [34], 1, false);
+		animation.add("gem4", [35], 1, false);
+		animation.add("gem5", [36], 1, false);
+
         animation.play("idle");
         // immovable = false;
         // gravity
@@ -38,9 +48,11 @@ class ObjectItem extends FlxSprite {
         super.update(elapsed);
         // Дополнительная логика для ящика (если потребуется)
     }
-	public function setType(_type:Int = 0):Void
+	public function setTypeAndSpec(_type:Int = 0, _spec:Int = 1):Void
 	{
 		type = _type;
+		special = _spec;
+
 		switch type
 		{
 			case 0:
@@ -53,22 +65,55 @@ class ObjectItem extends FlxSprite {
 				canGetDamage = false;
 			case 2:
 				// door
-				animation.play("door");
+				switch special
+				{
+					case 1:
+						animation.play("door1");
+					case 2:
+						animation.play("door2");
+					case 3:
+						animation.play("door3");
+				}
 				canGetDamage = false;
 			case 3:
 				// key
-				animation.play("key");
+				switch special
+				{
+					case 1:
+						animation.play("key1");
+					case 2:
+						animation.play("key2");
+					case 3:
+						animation.play("key3");
+				}
 				canGetDamage = false;
 			case 4:
 				// exit
 				animation.play("exit");
 				canGetDamage = false;
-		}
-	}
+			case 5:
+				// gem
+				switch special
+				{
+					case 1:
+						animation.play("gem1");
+					// canGetDamage = false;
+					case 2:
+						animation.play("gem2");
+					// canGetDamage = false;
+					case 3:
+						animation.play("gem3");
+					// canGetDamage = false;
+					case 4:
+						animation.play("gem4");
+					// canGetDamage = false;
+					case 5:
+						animation.play("gem5");
+						// canGetDamage = false;
+				}
+				canGetDamage = false;
 
-	public function setSpecial(_spec:Int = 0)
-	{
-		special = _spec;
+		}
 	}
 
 	public function onAttack():Void
