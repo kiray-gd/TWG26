@@ -73,8 +73,13 @@ class Boss extends FlxSprite
 		if (healthPoint <= 0)
 		{
 			isAlive = false;
-			// Reg.bossAlive[type - 1] = false;
 			trace(Reg.bossAlive);
+			switch type
+			{
+				case 1:
+					// если первый босс открываем меч
+					Reg.weaponsAndGems[0] = true;
+			}
 		}
 	}
 	private function thinkingFunction()

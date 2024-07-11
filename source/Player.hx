@@ -159,7 +159,12 @@ class Player extends FlxSprite
 		}
 
 		// атака
-		if (FlxG.keys.pressed.V && canAttack)
+		// проверяем есть ли меч в Reg
+		if (!Reg.weaponsAndGems[0])
+		{
+			// nothing
+		}
+		else if (FlxG.keys.pressed.V && canAttack)
 		{
 			canAttack = false;
 			isAttack = true;
