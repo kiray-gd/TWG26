@@ -82,6 +82,7 @@ class Tile extends FlxSprite
                 animation.play("default");
             case 2:
                 animation.play("platform");
+				this.setSize(16, 8);
 			case 4:
 				animation.play("trapDown");
 				this.setSize(16, 8);
@@ -104,6 +105,7 @@ class Tile extends FlxSprite
 				this.x += 8;
 			case 8:
 				animation.play("temporaryPlatform");
+				this.setSize(16, 8);
 				isTemporary = true;
 			case 9:
 				animation.play("fakewall");

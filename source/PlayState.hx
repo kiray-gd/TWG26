@@ -23,6 +23,7 @@ class PlayState extends FlxState
 
 	// для видимости босса (он всегда один на уровне)
 	private var boss:Boss;
+	private var isBossSpawned:Bool = false;
 
 	//groups wallbounds
 	private var tileMapGroup:FlxGroup;
@@ -43,6 +44,9 @@ class PlayState extends FlxState
 	private var restartTimer:FlxTimer;
 	private var isGameOver:Bool = false;
 	private var isTimerStart:Bool = false;
+
+	// костыль, потому что спуск с платформы не работал
+	private var resTimer:FlxTimer;
 
     override public function create():Void
     {
@@ -102,6 +106,7 @@ class PlayState extends FlxState
 		// FlxG.camera.setPosition(50, 50);
 		// trace(FlxG.camera.x, FlxG.camera.y);
 		restartTimer = new FlxTimer();
+		resTimer = new FlxTimer();
 		// обновление области коллизий
 		// v0.2 изменение, поскольку враги вне области видимости игрока проваливались сквозь тайлы
 		FlxG.worldBounds.setSize(1024, 1024);
@@ -109,9 +114,14 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float):Void
 		{
-		// super.update(elapsed);
+		super.update(elapsed);
 		// Обработка коллизий игрока и стен
 		FlxG.collide(player, tileMapGroup, onCollideFunction);
+		// обработка коллизий стен и босса
+		// FlxG.collide(boss, tileMapGroup, onColBossWalls);
+		FlxG.collide(boss, tileMapGroup);
+		// Обработка коллизий мобов и стен
+		FlxG.collide(enemyGroup, tileMapGroup, onColEnemyWalls);
 		// Обработка коллизий игрока и мобов и босса
 		// FlxG.overlap(player, enemyGroup, onCollidePlayerEnemy);
 		FlxG.collide(player, enemyGroup, onCollidePlayerEnemy);
@@ -126,13 +136,9 @@ class PlayState extends FlxState
 		// FlxG.collide(player, itemGroup, onCollidePlayerItems);
 		FlxG.collide(player, itemGroup);
 
-		// обработка коллизий стен и босса
-		// FlxG.collide(boss, tileMapGroup, onColBossWalls);
-		FlxG.collide(boss, tileMapGroup);
+
 		FlxG.collide(boss, itemGroup);
 
-		// Обработка коллизий мобов и стен
-		FlxG.collide(enemyGroup, tileMapGroup, onColEnemyWalls);
 		// ОБработка коллайдов врагов и объектов
 		FlxG.collide(enemyGroup, itemGroup);
 
@@ -203,12 +209,11 @@ class PlayState extends FlxState
 			FlxG.timeScale += 0.01;
 		}
 
-		super.update(elapsed);
-
+		// super.update(elapsed);
 		}
 
 		//ON UPDATE FUNCTIONS
-	private function onCollideFunction(player:FlxObject, sprGroup:FlxObject):Void
+	private function onCollideFunction(_player:FlxObject, sprGroup:FlxObject):Void
 		{
 		// if (player.touching == FlxDirectionFlags.LEFT || player.touching == FlxDirectionFlags.RIGHT)
 		// {
@@ -216,17 +221,29 @@ class PlayState extends FlxState
 		// }
 		if (Std.isOfType(sprGroup, Tile))
 		{
+			var _pl:Player = cast(_player, Player);
 			var _tile:Tile = cast(sprGroup, Tile);
-			if (_tile.getType() == 2 && cast(player, Player).isWantFall)
+			if (_tile.getType() == 2 && _pl.isWantFall)
 			{
-				player.y += 8;
+				trace(_pl.getPosition());
+				_pl.allowCollisions = NONE;
+				_pl.setPosition(_pl.x, _pl.y + 16);
+				resTimer.start(0.05, function(timer:FlxTimer)
+				{
+					_pl.allowCollisions = ANY;
+				});
+
+				trace(_pl.getPosition());
+				player.isWantFall = false;
+				// player.immovable = false;
+				// _pl.x += 20;
 			}
 			else if ((_tile.getType()) >= 4 && (_tile.getType()) <= 7)
 			{
 				// получение урона при коллизии с тайлом кольями
 				// trace("получение урона при коллизии с тайлом кольями");
 				// FlxG.camera.shake(0.05, 0.5);
-				var _pl:Player = cast(player, Player);
+
 				_pl.onTrapCollision();
 
 				// if (_pl.healthPoint <= 0)
@@ -299,7 +316,7 @@ class PlayState extends FlxState
 	// Collide function Boss and Walls
 	private function onColBossWalls(boss:Boss, sprGroup:FlxObject):Void
 	{
-		trace("BOSS");
+		// trace("BOSS");
 		var _tile:Tile = cast(sprGroup, Tile);
 		if ((_tile.getType()) >= 4 && (_tile.getType()) <= 7)
 		{
@@ -526,16 +543,19 @@ class PlayState extends FlxState
 		// check boss alive
 		if (Reg.bossAlive[Reg.currentMap - 1])
 		{
-			if (!boss.isAlive && boss.alive)
+			if (isBossSpawned)
 			{
-				// FlxG.camera
-				FlxG.timeScale = 0.1;
-				creatBlood(boss.x + boss.width / 2, boss.y + boss.height / 2);
-				creatBlood(boss.x + boss.width / 2, boss.y + boss.height / 2);
-				creatBlood(boss.x + boss.width / 2, boss.y + boss.height / 2);
-				boss.kill();
-				remove(boss);
-				Reg.bossAlive[Reg.currentMap - 1] = false;
+				if (!boss.isAlive && boss.alive)
+				{
+					// FlxG.camera
+					FlxG.timeScale = 0.1;
+					creatBlood(boss.x + boss.width / 2, boss.y + boss.height / 2);
+					creatBlood(boss.x + boss.width / 2, boss.y + boss.height / 2);
+					creatBlood(boss.x + boss.width / 2, boss.y + boss.height / 2);
+					boss.kill();
+					remove(boss);
+					Reg.bossAlive[Reg.currentMap - 1] = false;
+				}
 			}
 		}
 	}
@@ -739,6 +759,7 @@ class PlayState extends FlxState
 					case 26:
 						// boss 1
 						creatBoss(j, i, false, 1);
+						isBossSpawned = true;
 				}
 			}
 		}
@@ -807,14 +828,20 @@ class PlayState extends FlxState
 
 	private function setSourceToEnemys()
 	{
+		// добавляем ссылку на игрока врагам
 		for (enemyElement in enemyGroup)
 		{
 			cast(enemyElement, Enemy).setPlayerSource(player);
 		}
-		if (Reg.bossAlive[Reg.currentMap - 1])
+		// добавляем ссылку на игрока  босу
+		if (isBossSpawned)
 		{
-			boss.setPlayerSource(player);
+			if (Reg.bossAlive[Reg.currentMap - 1])
+			{
+				boss.setPlayerSource(player);
+			}
 		}
 		
+
 	}
 }

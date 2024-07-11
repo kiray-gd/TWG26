@@ -62,8 +62,8 @@ class Player extends FlxSprite
 		// gravity
 		acceleration.set(0, 600);
 		drag.set(400, 0);
-		this.setSize(8, 16);
-		this.offset.set(4, 0);
+		this.setSize(8, 12);
+		this.offset.set(4, 4);
 
         jumpTimer = new FlxTimer();
 		damageTimer = new FlxTimer();
@@ -141,6 +141,7 @@ class Player extends FlxSprite
 			if (FlxG.keys.pressed.SPACE)
 			{
 				isWantFall = true;
+
 			}
 			else
 			{
