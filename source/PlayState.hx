@@ -524,15 +524,19 @@ class PlayState extends FlxState
 			}
 		}
 		// check boss alive
-		if (!boss.isAlive && boss.alive)
+		if (Reg.bossAlive[Reg.currentMap - 1])
 		{
-			// FlxG.camera
-			FlxG.timeScale = 0.1;
-			creatBlood(boss.x + boss.width / 2, boss.y + boss.height / 2);
-			creatBlood(boss.x + boss.width / 2, boss.y + boss.height / 2);
-			creatBlood(boss.x + boss.width / 2, boss.y + boss.height / 2);
-			boss.kill();
-			remove(boss);
+			if (!boss.isAlive && boss.alive)
+			{
+				// FlxG.camera
+				FlxG.timeScale = 0.1;
+				creatBlood(boss.x + boss.width / 2, boss.y + boss.height / 2);
+				creatBlood(boss.x + boss.width / 2, boss.y + boss.height / 2);
+				creatBlood(boss.x + boss.width / 2, boss.y + boss.height / 2);
+				boss.kill();
+				remove(boss);
+				Reg.bossAlive[Reg.currentMap - 1] = false;
+			}
 		}
 	}
 	private function checkPlayerAlive():Void
@@ -765,13 +769,16 @@ class PlayState extends FlxState
 	// создаем босса
 	private function creatBoss(jPos:Int = 0, iPos:Int = 0, isImmovable:Bool = false, _type:Int = 1):Void
 	{
-		boss = new Boss(jPos * 16, iPos * 16);
-		boss.immovable = isImmovable;
-		boss.setType(_type);
-		boss.setBulletGroupAndEnemyGroup(bossBulletGroup, enemyGroup);
-		boss.allowCollisions = ANY;
-		add(boss);
-		// enemyGroup.add(boss);
+		if (Reg.bossAlive[Reg.currentMap - 1])
+		{
+			boss = new Boss(jPos * 16, iPos * 16);
+			boss.immovable = isImmovable;
+			boss.setType(_type);
+			boss.setBulletGroupAndEnemyGroup(bossBulletGroup, enemyGroup);
+			boss.allowCollisions = ANY;
+			add(boss);
+			// enemyGroup.add(boss);
+		}
 	}
 
 
@@ -804,6 +811,10 @@ class PlayState extends FlxState
 		{
 			cast(enemyElement, Enemy).setPlayerSource(player);
 		}
-		boss.setPlayerSource(player);
+		if (Reg.bossAlive[Reg.currentMap - 1])
+		{
+			boss.setPlayerSource(player);
+		}
+		
 	}
 }

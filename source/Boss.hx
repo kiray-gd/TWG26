@@ -73,7 +73,7 @@ class Boss extends FlxSprite
 		if (healthPoint <= 0)
 		{
 			isAlive = false;
-			Reg.bossAlive[type - 1] = false;
+			// Reg.bossAlive[type - 1] = false;
 			trace(Reg.bossAlive);
 		}
 	}
@@ -249,7 +249,8 @@ class Boss extends FlxSprite
 			case 1:
 				// blind knight
 				acceleration.set(0, 600);
-				healthPoint = 10;
+				healthPoint = 2;
+				// healthPoint = 16;
 				price = 10000;
 				visibilityArea = 300;
 				maxVelocity.set(96, 600);

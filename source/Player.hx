@@ -248,6 +248,9 @@ class Player extends FlxSprite
 	{
 		canMove = false;
 		isWorking = true;
+		animation.play("idle");
+		velocity.set(0, 0);
+		acceleration.set(0, 0);
 	}
 
 	private function workInProgress():Void
