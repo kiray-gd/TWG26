@@ -27,7 +27,7 @@ class PlayState extends FlxState
 	//groups wallbounds
 	private var tileMapGroup:FlxGroup;
 	private var enemyGroup:FlxGroup;
-	private var bossGroup:FlxGroup;
+	private var bossBulletGroup:FlxGroup;
 	private var itemGroup:FlxGroup;
 	// particle
 	private var particleGroup:FlxGroup;
@@ -70,6 +70,9 @@ class PlayState extends FlxState
 		// группа врагов
 		enemyGroup = new FlxGroup();
 		add(enemyGroup);
+		// группа пуль боссов и врагов  допустим
+		bossBulletGroup = new FlxGroup();
+		add(bossBulletGroup);
 		itemGroup = new FlxGroup();
 		add(itemGroup);
 		particleGroup = new FlxGroup();
@@ -113,8 +116,10 @@ class PlayState extends FlxState
 		// FlxG.overlap(player, enemyGroup, onCollidePlayerEnemy);
 		FlxG.collide(player, enemyGroup, onCollidePlayerEnemy);
 		FlxG.collide(player, boss, onCollidePlayerBoss);
+		FlxG.overlap(player, bossBulletGroup, onOverlapPlayerBullet);
 		// Обработка оверлапа мили атаки игрока и врагов
 		FlxG.overlap(player.meleeAttack, enemyGroup, onMeleeAttackOvelap);
+		FlxG.overlap(player.meleeAttack, boss, onMeleeAttackOvelapBoss);
 		// Обработка оверлапа мили атаки и объектов
 		FlxG.overlap(player.meleeAttack, itemGroup, onMeleeAttackItemOvelap);
 		// Обработка коллайдов игрока и объектов
@@ -156,6 +161,7 @@ class PlayState extends FlxState
 		visionRegionUpdate();
 		// Проверяем живы ли враги по их ХП поинтам
 		checkEnemyAlive();
+		// checkBossAlive();
 		checkPlayerAlive();
 		checkObjectsNearby();
 		checkKeysAndDoors();
@@ -172,7 +178,30 @@ class PlayState extends FlxState
 				}
 			}
 		}
+		// контроль числа пуль
+		if (bossBulletGroup.length > 100)
+		{
+			while (bossBulletGroup.length > 100)
+			{
+				var tmp:FlxSprite = cast(bossBulletGroup.getFirstExisting(), FlxSprite);
+				if (tmp != null)
+				{
+					tmp.kill();
+					bossBulletGroup.remove(tmp, true);
+				}
+			}
+		}
 	
+
+		// control timescale
+		if (FlxG.timeScale < 0.3)
+		{
+			FlxG.timeScale += 0.001;
+		}
+		else if (FlxG.timeScale < 1)
+		{
+			FlxG.timeScale += 0.01;
+		}
 
 		super.update(elapsed);
 
@@ -361,6 +390,14 @@ class PlayState extends FlxState
 		}
 	}
 
+	private function onOverlapPlayerBullet(_player:FlxObject, bulletSpr:FlxObject):Void
+	{
+		// player.onA
+		player.onEnemyHit();
+		bulletSpr.kill();
+		bossBulletGroup.remove(bulletSpr, true);
+	}
+
 	// private function onCollidePlayerItems(player:FlxObject, sprGroup:FlxObject)
 	// {
 	// 	// some logic
@@ -381,6 +418,14 @@ class PlayState extends FlxState
 		if (attackObj.visible == true && cast(enemyObj, Enemy).canGetDamage)
 		{
 			cast(enemyObj, Enemy).onAttack(player.x, player.y, 1);
+		}
+	}
+
+	private function onMeleeAttackOvelapBoss(attackObj:FlxObject, enemyObj:FlxObject)
+	{
+		if (attackObj.visible == true && cast(enemyObj, Boss).canGetDamage)
+		{
+			cast(enemyObj, Boss).onAttack(player.x, player.y, 1);
 		}
 	}
 
@@ -477,6 +522,17 @@ class PlayState extends FlxState
 				tempEnemySpr.kill();
 				enemyGroup.remove(enem, true);
 			}
+		}
+		// check boss alive
+		if (!boss.isAlive && boss.alive)
+		{
+			// FlxG.camera
+			FlxG.timeScale = 0.1;
+			creatBlood(boss.x + boss.width / 2, boss.y + boss.height / 2);
+			creatBlood(boss.x + boss.width / 2, boss.y + boss.height / 2);
+			creatBlood(boss.x + boss.width / 2, boss.y + boss.height / 2);
+			boss.kill();
+			remove(boss);
 		}
 	}
 	private function checkPlayerAlive():Void
@@ -712,6 +768,7 @@ class PlayState extends FlxState
 		boss = new Boss(jPos * 16, iPos * 16);
 		boss.immovable = isImmovable;
 		boss.setType(_type);
+		boss.setBulletGroupAndEnemyGroup(bossBulletGroup, enemyGroup);
 		boss.allowCollisions = ANY;
 		add(boss);
 		// enemyGroup.add(boss);

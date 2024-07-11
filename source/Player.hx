@@ -23,7 +23,7 @@ class Player extends FlxSprite
 	public var canGetDamage = true;
 
 	// public var healthPoint:Int = 3;
-	public var healthPoint:Int = 1;
+	public var healthPoint:Int = 4;
 
 	private var damageTimer:FlxTimer;
 	private var flickerTime:Float = 2;
@@ -290,9 +290,11 @@ class Player extends FlxSprite
 			healthPoint -= 1;
 			canGetDamage = false;
 			this.flicker(flickerTime);
+			// this.allowCollisions = FLOOR;
 			damageTimer.start(flickerTime, function(timer:FlxTimer)
 			{
 				canGetDamage = true;
+				// this.allowCollisions = ANY;
 			});
 			this.velocity.x = this.velocity.x * -1;
 			this.velocity.y = this.velocity.y * -1;
