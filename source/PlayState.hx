@@ -257,8 +257,8 @@ class PlayState extends FlxState
 			{
 				// trace(_pl.getPosition());
 				_pl.allowCollisions = NONE;
-				_pl.setPosition(_pl.x, _pl.y + 16);
-				resTimer.start(0.05, function(timer:FlxTimer)
+				_pl.setPosition(_pl.x, _pl.y + 6);
+				resTimer.start(0.001, function(timer:FlxTimer)
 				{
 					_pl.allowCollisions = ANY;
 				});
@@ -566,6 +566,8 @@ class PlayState extends FlxState
 					creatBlood(tempEnemySpr.x + tempEnemySpr.width / 2, tempEnemySpr.y + tempEnemySpr.height / 2);
 				}
 				
+				// add blood by price
+				bloodBar.value += tempEnemySpr.price;
 				tempEnemySpr.kill();
 				enemyGroup.remove(enem, true);
 			}
@@ -585,6 +587,8 @@ class PlayState extends FlxState
 					boss.kill();
 					remove(boss);
 					Reg.bossAlive[Reg.currentMap - 1] = false;
+					// add blood to player
+					bloodBar.value += 5000;
 				}
 			}
 		}
@@ -599,7 +603,7 @@ class PlayState extends FlxState
 			}
 			// save blood level
 			// Reg.blood = bloodBar.value;
-			trace(Reg.blood);
+			// trace(Reg.blood);
 			player.kill();
 			isGameOver = true;
 			gameOver();
@@ -681,10 +685,9 @@ class PlayState extends FlxState
 		// bleeding
 		if (!player.isWorking)
 		{
-			bloodBar.value -= bleed + 10;
+			bloodBar.value -= bleed;
 		}
-
-		if (player.isWorking)
+		else
 		{
 			Reg.blood = bloodBar.value;
 			bloodBar.value += bleed * 2;
