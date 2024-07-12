@@ -40,6 +40,7 @@ class Boss extends FlxSprite
 	private var logicTimer2:Int = 400;
 	private var currentTimer2:Int = 0;
 	private var attackDelay:Int = 60;
+	public var isPlayerObscure:Bool = false;
 
 	// bullets groupSource
 	private var bulletGroupSource:FlxGroup;
@@ -90,9 +91,12 @@ class Boss extends FlxSprite
 				// blind knight logic
 				// Math.abs(this.y - playerSource.y) < 20
 				// if (FlxMath.distanceBetween(this, playerSource) < visibilityArea && this.y + 64 > playerSource.y)
-				if (FlxMath.distanceBetween(this, playerSource) < visibilityArea && Math.abs(this.y - playerSource.y) < 60)
+				if (FlxMath.distanceBetween(this, playerSource) < visibilityArea
+					&& Math.abs(this.y - playerSource.y) < 90
+					&& this.y + 64 > playerSource.y)
 				{
 					// игрок виден
+					isPlayerObscure = true;
 					currentTimer1++;
 					currentTimer2++;
 
@@ -213,6 +217,7 @@ class Boss extends FlxSprite
 				else
 				{
 					// игрок вне области видимости
+					isPlayerObscure = false;
 					animation.play("idle");
 					isMoving = false;
 					// decrase velocity
@@ -268,7 +273,7 @@ class Boss extends FlxSprite
 				// blind knight
 				acceleration.set(0, 600);
 				// healthPoint = 2;
-				healthPoint = 16;
+				healthPoint = 20;
 				price = 10000;
 				visibilityArea = 300;
 				maxVelocity.set(96, 600);

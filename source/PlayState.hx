@@ -8,6 +8,7 @@ import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxVelocity;
+import flixel.ui.FlxBar;
 import flixel.util.FlxDirection;
 import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
@@ -47,6 +48,9 @@ class PlayState extends FlxState
 
 	// костыль, потому что спуск с платформы не работал
 	private var resTimer:FlxTimer;
+
+	// GUI
+	private var bossBar:FlxBar;
 
     override public function create():Void
     {
@@ -110,6 +114,21 @@ class PlayState extends FlxState
 		// обновление области коллизий
 		// v0.2 изменение, поскольку враги вне области видимости игрока проваливались сквозь тайлы
 		FlxG.worldBounds.setSize(1024, 1024);
+		// GUI BAR upd
+		// if boss exist
+		if (boss != null)
+		{
+			bossBar = new FlxBar(10, 10, FlxBarFillDirection.LEFT_TO_RIGHT, 300, 4, boss, "healthPoint", 0, boss.healthPoint);
+			// bossBar.parent = boss;
+			// bossBar.parentVariable = "healthPoint";
+			// Создаем заливку бара с указанием цветов фона и заливки
+			bossBar.createFilledBar(0xFF270603, 0xffc91d14);
+			// Фиксируем полоску к камере
+			bossBar.scrollFactor.set(0, 0);
+			// Добавляем бар в сцену
+			add(bossBar);
+		}
+		
     }
 
 	override public function update(elapsed:Float):Void
@@ -172,6 +191,7 @@ class PlayState extends FlxState
 		checkObjectsNearby();
 		checkKeysAndDoors();
 		checkGems();
+		updateGUI();
 		// Контроль числа партиклов, чтобы комп не умер
 		if (particleGroup.length > 100)
 		{
@@ -635,6 +655,17 @@ class PlayState extends FlxState
 					itemGroup.remove(obj, true);
 				}
 			}
+		}
+	}
+
+	// update GUI
+	private function updateGUI()
+	{
+		// bossBar
+		if (bossBar != null && boss != null)
+		{
+			// если игрок виден то виден и ХП бар босса
+			bossBar.visible = boss.isPlayerObscure;
 		}
 	}
 
