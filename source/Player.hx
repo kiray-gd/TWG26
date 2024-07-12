@@ -411,5 +411,38 @@ class Player extends FlxSprite
 		weapon.y = 196;
 		weapon.scrollFactor.set(0, 0);
 		gemsGroup.add(weapon);
+		// gems
+		for (gemIndex in 0...Reg.gems.length)
+		{
+			var gemSprite:FlxSprite = new FlxSprite();
+			gemSprite.loadGraphic("assets/images/guitiles.png", true, 16, 16, false);
+			if (Reg.gems[gemIndex])
+			{
+				// 	gemSprite.animation.add("idle", [Reg.gems.indexOf(gemElement)+1])
+				// 	Reg.gems.indexOf(gemElement)
+				switch gemIndex
+				{
+					case 0:
+						gemSprite.animation.add("idle", [1], 10, false);
+					case 1:
+						gemSprite.animation.add("idle", [2], 10, false);
+					case 2:
+						gemSprite.animation.add("idle", [3], 10, false);
+					case 3:
+						gemSprite.animation.add("idle", [4], 10, false);
+					case 4:
+						gemSprite.animation.add("idle", [5], 10, false);
+				}
+			}
+			else
+			{
+				gemSprite.animation.add("idle", [6], 10, false);
+			}
+			gemSprite.animation.play("idle");
+			gemSprite.x = 25 + (16 * gemIndex);
+			gemSprite.y = 196;
+			gemSprite.scrollFactor.set(0, 0);
+			gemsGroup.add(gemSprite);
+		}
 	}
 }
