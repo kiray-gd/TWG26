@@ -51,6 +51,8 @@ class PlayState extends FlxState
 
 	// GUI
 	private var bossBar:FlxBar;
+	private var bloodBar:FlxBar;
+	private var bleed:Float = 1;
 
     override public function create():Void
     {
@@ -95,7 +97,7 @@ class PlayState extends FlxState
 		playerStartPosition = Reg.playerLastPosition;
 		player = new Player(playerStartPosition.x, playerStartPosition.y);
 		player.velocity.y -= 10;
-		trace("player created at position:", player.getPosition());
+		// trace("player created at position:", player.getPosition());
         add(player);
 
 		// даем врагам ссылки на игрока
@@ -114,7 +116,7 @@ class PlayState extends FlxState
 		// обновление области коллизий
 		// v0.2 изменение, поскольку враги вне области видимости игрока проваливались сквозь тайлы
 		FlxG.worldBounds.setSize(1024, 1024);
-		// GUI BAR upd
+		// GUI BAR creat
 		// if boss exist
 		if (boss != null)
 		{
@@ -128,7 +130,14 @@ class PlayState extends FlxState
 			// Добавляем бар в сцену
 			add(bossBar);
 		}
-		
+		// blood bar
+		bloodBar = new FlxBar(10, 230, FlxBarFillDirection.LEFT_TO_RIGHT, 300, 1);
+		bloodBar.createFilledBar(0xFF270603, 0xffc91d14);
+		bloodBar.setRange(0, Reg.bloodMax);
+		bloodBar.value = Reg.blood;
+		bloodBar.alpha = 0.6;
+		bloodBar.scrollFactor.set(0, 0);
+		add(bloodBar);
     }
 
 	override public function update(elapsed:Float):Void
@@ -246,7 +255,7 @@ class PlayState extends FlxState
 			var _tile:Tile = cast(sprGroup, Tile);
 			if (_tile.getType() == 2 && _pl.isWantFall)
 			{
-				trace(_pl.getPosition());
+				// trace(_pl.getPosition());
 				_pl.allowCollisions = NONE;
 				_pl.setPosition(_pl.x, _pl.y + 16);
 				resTimer.start(0.05, function(timer:FlxTimer)
@@ -254,7 +263,7 @@ class PlayState extends FlxState
 					_pl.allowCollisions = ANY;
 				});
 
-				trace(_pl.getPosition());
+				// trace(_pl.getPosition());
 				player.isWantFall = false;
 				// player.immovable = false;
 				// _pl.x += 20;
@@ -588,7 +597,9 @@ class PlayState extends FlxState
 			{
 				creatBlood(player.x + player.width / 2, player.y + player.height / 2);
 			}
-
+			// save blood level
+			// Reg.blood = bloodBar.value;
+			trace(Reg.blood);
 			player.kill();
 			isGameOver = true;
 			gameOver();
@@ -666,6 +677,17 @@ class PlayState extends FlxState
 		{
 			// если игрок виден то виден и ХП бар босса
 			bossBar.visible = boss.isPlayerObscure;
+		}
+		// bleeding
+		if (!player.isWorking)
+		{
+			bloodBar.value -= bleed + 10;
+		}
+
+		if (player.isWorking)
+		{
+			Reg.blood = bloodBar.value;
+			bloodBar.value += bleed * 2;
 		}
 	}
 
@@ -783,7 +805,7 @@ class PlayState extends FlxState
 						{
 							Reg.playerLastPosition.set(j * tileSize, i * tileSize);
 						}
-						trace("player start position:", playerStartPosition);
+					// trace("player start position:", playerStartPosition);
 					case 15:
 						// fake wall
 						creatWall(j, i, true, FlxDirectionFlags.NONE, 9);

@@ -61,4 +61,7 @@ class Reg
 	static public var weaponsAndGems:Array<Bool> = [false, false, false, false, false, false];
 	// 0 - sword
 	static public var gems:Array<Bool> = [false, false, false, false, false];
+	// blood magic
+	static public var blood:Float = 10000;
+	static public var bloodMax:Float = 10000;
 }

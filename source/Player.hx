@@ -23,7 +23,8 @@ class Player extends FlxSprite
 	public var canGetDamage = true;
 
 	// public var healthPoint:Int = 3;
-	public var healthPoint:Int = 4;
+	public var healthPoint:Int = 3;
+	public var maxHealth:Int = 3;
 
 	private var damageTimer:FlxTimer;
 	private var flickerTime:Float = 2;
@@ -42,7 +43,7 @@ class Player extends FlxSprite
 	public var typeActiveObject:Int = 1; // 1 - bonfire
 	public var specActiveObject:Int = 0; // keys doors etc
 
-	private var isWorking:Bool = false;
+	public var isWorking:Bool = false;
 	private var workTimer:Int = 180;
 	private var currentWprkTime:Int = 0;
 
@@ -75,6 +76,16 @@ class Player extends FlxSprite
 		txtGUI = new FlxText(0, 0, 64, "keep warm");
 		txtGUI.visible = false;
 		FlxG.state.add(txtGUI);
+		// get more health if take gems
+		for (i in 0...Reg.gems.length)
+		{
+			if (Reg.gems[i] == true)
+			{
+				maxHealth++;
+			}
+		}
+		healthPoint = maxHealth;
+		// trace("Max health: ", healthPoint);
     }
 
     override public function update(elapsed:Float):Void
