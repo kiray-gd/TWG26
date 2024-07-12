@@ -589,6 +589,7 @@ class PlayState extends FlxState
 					Reg.bossAlive[Reg.currentMap - 1] = false;
 					// add blood to player
 					bloodBar.value += 5000;
+					player.updateGui();
 				}
 			}
 		}

@@ -2,6 +2,7 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
@@ -22,9 +23,7 @@ class Player extends FlxSprite
     public var isWantFall = false;
 	public var canGetDamage = true;
 
-	// public var healthPoint:Int = 3;
 	public var healthPoint:Int = 3;
-	public var maxHealth:Int = 3;
 
 	private var damageTimer:FlxTimer;
 	private var flickerTime:Float = 2;
@@ -37,15 +36,19 @@ class Player extends FlxSprite
 	private var attackCoolDownTimer:FlxTimer;
 	private var coolDownTime:Float = 0.4;
 
+	// some for work
+	public var isWorking:Bool = false;
+
+	private var workTimer:Int = 180;
+	private var currentWprkTime:Int = 0;
 	// additional sprites
 	public var meleeAttack:MeleeAttack;
 	public var txtGUI:FlxText;
 	public var typeActiveObject:Int = 1; // 1 - bonfire
 	public var specActiveObject:Int = 0; // keys doors etc
-
-	public var isWorking:Bool = false;
-	private var workTimer:Int = 180;
-	private var currentWprkTime:Int = 0;
+	// gui sprites
+	private var healthGroup:FlxGroup;
+	private var gemsGroup:FlxGroup;
 
     public function new(X:Float, Y:Float)
     {
@@ -76,16 +79,14 @@ class Player extends FlxSprite
 		txtGUI = new FlxText(0, 0, 64, "keep warm");
 		txtGUI.visible = false;
 		FlxG.state.add(txtGUI);
-		// get more health if take gems
-		for (i in 0...Reg.gems.length)
-		{
-			if (Reg.gems[i] == true)
-			{
-				maxHealth++;
-			}
-		}
-		healthPoint = maxHealth;
+		healthPoint = Reg.maxHealth;
 		// trace("Max health: ", healthPoint);
+		// gui sprites
+		healthGroup = new FlxGroup();
+		FlxG.state.add(healthGroup);
+		gemsGroup = new FlxGroup();
+		FlxG.state.add(gemsGroup);
+		updateGui();
     }
 
     override public function update(elapsed:Float):Void
@@ -248,11 +249,16 @@ class Player extends FlxSprite
 						if (!Reg.bossAlive[Reg.currentMap - 1])
 						{
 							// txtGUI.text = "run away";
+							Reg.keysArray = [];
 							FlxG.switchState(new PlayState());
 						}
 					case 5:
 						// GEM
 						Reg.gems[specActiveObject - 1] = true;
+						Reg.maxHealth += 1;
+						Reg.bloodMax += 2500;
+						// healthPoint++;
+						updateGui();
 						trace(Reg.gems);
 
 				}
@@ -313,6 +319,7 @@ class Player extends FlxSprite
 		if (canGetDamage)
 		{
 			healthPoint -= 1;
+			updateGui();
 			canGetDamage = false;
 			this.flicker(flickerTime);
 			// this.allowCollisions = FLOOR;
@@ -361,5 +368,48 @@ class Player extends FlxSprite
 				// trace(Reg.gems);
 				
 		}
+	}
+	public function updateGui():Void
+	{
+		for (elem in healthGroup)
+		{
+			elem.kill();
+			healthGroup.remove(elem);
+			// trace("Asdasdas");
+		}
+		for (elem in gemsGroup)
+		{
+			elem.kill();
+			gemsGroup.remove(elem);
+			// trace("Asdasdas");
+		}
+		// hearts
+		for (i in 0...healthPoint)
+		{
+			var heart:FlxSprite = new FlxSprite();
+			heart.loadGraphic("assets/images/guitiles.png", true, 16, 16, false);
+			heart.animation.add("idle", [0], 10, false);
+			heart.animation.play("idle");
+			heart.x = 8 + (16 * i);
+			heart.y = 214;
+			heart.scrollFactor.set(0, 0);
+			healthGroup.add(heart);
+		}
+		// weapon
+		var weapon:FlxSprite = new FlxSprite();
+		weapon.loadGraphic("assets/images/guitiles.png", true, 16, 16, false);
+		if (Reg.weaponsAndGems[0])
+		{
+			weapon.animation.add("idle", [7], 10, false);
+		}
+		else
+		{
+			weapon.animation.add("idle", [8], 10, false);
+		}
+		weapon.animation.play("idle");
+		weapon.x = 9;
+		weapon.y = 196;
+		weapon.scrollFactor.set(0, 0);
+		gemsGroup.add(weapon);
 	}
 }

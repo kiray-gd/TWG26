@@ -64,4 +64,6 @@ class Reg
 	// blood magic
 	static public var blood:Float = 10000;
 	static public var bloodMax:Float = 10000;
+	// player health
+	static public var maxHealth:Int = 3;
 }
