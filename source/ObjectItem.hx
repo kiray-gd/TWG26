@@ -19,23 +19,23 @@ class ObjectItem extends FlxSprite {
     public function new(x:Float, y:Float) {
         super(x, y);
         // this.makeGraphic(16, 16, FlxColor.GREEN);
-        loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
-        animation.add("idle", [11], 1, false);
-		animation.add("bonfire", [12], 1, false);
-		animation.add("door1", [9], 1, false);
-		animation.add("door2", [24], 1, false);
-		animation.add("door3", [25], 1, false);
-		animation.add("key1", [13], 1, false);
-		animation.add("key2", [22], 1, false);
-		animation.add("key3", [23], 1, false);
-		animation.add("exit", [10], 1, false);
-		animation.add("gem1", [32], 1, false);
-		animation.add("gem2", [33], 1, false);
-		animation.add("gem3", [34], 1, false);
-		animation.add("gem4", [35], 1, false);
-		animation.add("gem5", [36], 1, false);
+		// loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
+		// animation.add("idle", [11], 1, false);
+		// // animation.add("bonfire", [12], 1, false);
+		// animation.add("door1", [9], 1, false);
+		// animation.add("door2", [24], 1, false);
+		// animation.add("door3", [25], 1, false);
+		// animation.add("key1", [13], 1, false);
+		// animation.add("key2", [22], 1, false);
+		// animation.add("key3", [23], 1, false);
+		// animation.add("exit", [10], 1, false);
+		// animation.add("gem1", [32], 1, false);
+		// animation.add("gem2", [33], 1, false);
+		// animation.add("gem3", [34], 1, false);
+		// animation.add("gem4", [35], 1, false);
+		// animation.add("gem5", [36], 1, false);
 
-        animation.play("idle");
+		// animation.play("idle");
         // immovable = false;
         // gravity
 		// acceleration.set(0, 600);
@@ -57,14 +57,25 @@ class ObjectItem extends FlxSprite {
 		{
 			case 0:
 				// cracked wall
+				loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
+				animation.add("idle", [11], 1, false);
 				animation.play("idle");
 				canGetDamage = true;
 			case 1:
 				// bonfire
+				// animation.play("bonfire");
+				// new bonfire
+				loadGraphic("assets/images/bonefire.png", true, 16, 16);
+				animation.add("bonfire", [0, 1, 2, 3, 4], 10, true);
 				animation.play("bonfire");
+				// and new bonfire
 				canGetDamage = false;
 			case 2:
 				// door
+				loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
+				animation.add("door1", [9], 1, false);
+				animation.add("door2", [24], 1, false);
+				animation.add("door3", [25], 1, false);
 				switch special
 				{
 					case 1:
@@ -77,6 +88,10 @@ class ObjectItem extends FlxSprite {
 				canGetDamage = false;
 			case 3:
 				// key
+				loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
+				animation.add("key1", [13], 1, false);
+				animation.add("key2", [22], 1, false);
+				animation.add("key3", [23], 1, false);
 				switch special
 				{
 					case 1:
@@ -89,10 +104,18 @@ class ObjectItem extends FlxSprite {
 				canGetDamage = false;
 			case 4:
 				// exit
+				loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
+				animation.add("exit", [10], 1, false);
 				animation.play("exit");
 				canGetDamage = false;
 			case 5:
 				// gem
+				loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
+				animation.add("gem1", [32], 1, false);
+				animation.add("gem2", [33], 1, false);
+				animation.add("gem3", [34], 1, false);
+				animation.add("gem4", [35], 1, false);
+				animation.add("gem5", [36], 1, false);
 				switch special
 				{
 					case 1:

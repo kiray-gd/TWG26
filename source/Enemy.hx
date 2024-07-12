@@ -53,8 +53,7 @@ class Enemy extends FlxSprite
 		// logic
 		thinkingFunction();
 
-        super.update(elapsed);
-
+		super.update(elapsed);
     }
 
 	private function checkAlive():Void
@@ -136,11 +135,12 @@ class Enemy extends FlxSprite
 
 					if (this.y < playerSource.y)
 					{
-						acceleration.y += 1;
+						acceleration.y += 10;
+						
 					}
 					else
 					{
-						acceleration.y -= 1;
+						acceleration.y -= 10;
 					}
 				}
 				else
@@ -148,6 +148,7 @@ class Enemy extends FlxSprite
 					animation.play("idle");
 					isMoving = false;
 					// decrase velocity
+					velocity.set(0, 0);
 					acceleration.x = 0;
 					acceleration.y = 0;
 				}
@@ -313,7 +314,7 @@ class Enemy extends FlxSprite
 			case 0:
 				// skull
 				acceleration.set(0, 600);
-				healthPoint = 3;
+				healthPoint = 2;
 				price = 300;
 				visibilityArea = 100;
 				maxVelocity.set(10, 600);
@@ -324,7 +325,7 @@ class Enemy extends FlxSprite
 				acceleration.set(0, 0);
 				healthPoint = 1;
 				price = 200;
-				visibilityArea = 250;
+				visibilityArea = 124;
 				maxVelocity.set(15, 15);
 				// change hitbox
 				this.setSize(8, 8);
@@ -364,7 +365,7 @@ class Enemy extends FlxSprite
 			case 5:
 				// serpent
 				acceleration.set(0, 600);
-				healthPoint = 5;
+				healthPoint = 3;
 				price = 600;
 				visibilityArea = 300;
 				maxVelocity.set(36, 600);

@@ -306,6 +306,7 @@ class Player extends FlxSprite
 		if (canGetDamage)
 		{
 			healthPoint -= 1;
+			updateGui();
 			canGetDamage = false;
 			this.flicker(flickerTime);
 			damageTimer.start(flickerTime, function(timer:FlxTimer)

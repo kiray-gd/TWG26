@@ -142,14 +142,12 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float):Void
 		{
-		super.update(elapsed);
+		// super.update(elapsed);
 		// Обработка коллизий игрока и стен
 		FlxG.collide(player, tileMapGroup, onCollideFunction);
-		// обработка коллизий стен и босса
-		// FlxG.collide(boss, tileMapGroup, onColBossWalls);
-		FlxG.collide(boss, tileMapGroup);
 		// Обработка коллизий мобов и стен
 		FlxG.collide(enemyGroup, tileMapGroup, onColEnemyWalls);
+
 		// Обработка коллизий игрока и мобов и босса
 		// FlxG.overlap(player, enemyGroup, onCollidePlayerEnemy);
 		FlxG.collide(player, enemyGroup, onCollidePlayerEnemy);
@@ -164,8 +162,12 @@ class PlayState extends FlxState
 		// FlxG.collide(player, itemGroup, onCollidePlayerItems);
 		// FlxG.collide(player, itemGroup);
 
-
+		// обработка коллизий стен и босса
+		// FlxG.collide(boss, tileMapGroup, onColBossWalls);
+		FlxG.collide(boss, tileMapGroup);
+		// коллайды босса и предметов
 		FlxG.collide(boss, itemGroup);
+
 
 		// ОБработка коллайдов врагов и объектов
 		FlxG.collide(enemyGroup, itemGroup);
@@ -174,22 +176,6 @@ class PlayState extends FlxState
 		// FlxG.collide(itemGroup, itemGroup);
 		// Обработка оверлапов крови и стен
 		FlxG.collide(particleGroup, tileMapGroup, onOverlapParticleWall);
-
-
-			// FlxG.collide(player, tileMapGroup, function(player:FlxObject, tilemap:FlxObject):Void {
-			// 	// if (player.touching == FlxObject.LEFT || player.touching == FlxObject.RIGHT)
-			// 	if (player.touching == FlxDirectionFlags.LEFT || player.touching == FlxDirectionFlags.RIGHT)
-			// 	{
-			// 		(cast player:Player).onWallCollision();
-			// 	}
-			// });
-
-		// обновление области коллизий по положению игрока
-		// v0,1
-		// FlxG.worldBounds.setPosition(player.x - 320, player.y - 240);
-		// FlxG.worldBounds.setSize(640, 480);
-		// FlxG.worldBounds.setSize(320, 240);
-
 
 		// обновление области видимости игрока
 		visionRegionUpdate();
@@ -239,7 +225,7 @@ class PlayState extends FlxState
 			FlxG.timeScale += 0.01;
 		}
 
-		// super.update(elapsed);
+		super.update(elapsed);
 		}
 
 		//ON UPDATE FUNCTIONS
@@ -301,7 +287,7 @@ class PlayState extends FlxState
 					_pl.velocity.x += 300;
 				}
 			}
-			else if ((_tile.getType()) == 8)
+			else if (_tile.getType() == 8)
 			{
 				_tile.wasTouched = true;
 			}
@@ -311,35 +297,39 @@ class PlayState extends FlxState
 	// Collide function Enemys and Walls
 	private function onColEnemyWalls(enemGroup:FlxObject, sprGroup:FlxObject):Void
 	{
-		var _tile:Tile = cast(sprGroup, Tile);
-		if ((_tile.getType()) >= 4 && (_tile.getType()) <= 7)
+		trace("private function onColEnemyWalls(enemGroup:FlxObject, sprGroup:FlxObject):Void");
+		if (Std.isOfType(sprGroup, Tile))
 		{
-			// получение урона при коллизии с тайлом кольями
-			// trace("получение урона при коллизии с тайлом кольями");
-			// FlxG.camera.shake(0.05, 0.5);
+			var _tile:Tile = cast(sprGroup, Tile);
 			var _enemy:Enemy = cast(enemGroup, Enemy);
-			_enemy.onTrapCollision();
+			if (_tile.getType() >= 4 && _tile.getType() <= 7)
+			{
+				// получение урона при коллизии с тайлом кольями
+				// trace("получение урона при коллизии с тайлом кольями");
+				// FlxG.camera.shake(0.05, 0.5);
+				_enemy.onTrapCollision();
 
-			if (_enemy.touching == FlxDirectionFlags.UP)
-			{
-				_enemy.velocity.y += 300;
+				if (_enemy.touching == FlxDirectionFlags.UP)
+				{
+					_enemy.velocity.y += 300;
+				}
+				else if (_enemy.touching == FlxDirectionFlags.RIGHT)
+				{
+					_enemy.velocity.x -= 300;
+				}
+				else if (_enemy.touching == FlxDirectionFlags.DOWN)
+				{
+					_enemy.velocity.y -= 300;
+				}
+				else if (_enemy.touching == FlxDirectionFlags.LEFT)
+				{
+					_enemy.velocity.x += 300;
+				}
 			}
-			else if (_enemy.touching == FlxDirectionFlags.RIGHT)
+			else if (_tile.getType() == 8)
 			{
-				_enemy.velocity.x -= 300;
+				_tile.wasTouched = true;
 			}
-			else if (_enemy.touching == FlxDirectionFlags.DOWN)
-			{
-				_enemy.velocity.y -= 300;
-			}
-			else if (_enemy.touching == FlxDirectionFlags.LEFT)
-			{
-				_enemy.velocity.x += 300;
-			}
-		}
-		else if ((_tile.getType()) == 8)
-		{
-			_tile.wasTouched = true;
 		}
 	}
 
@@ -687,6 +677,11 @@ class PlayState extends FlxState
 		if (!player.isWorking)
 		{
 			bloodBar.value -= bleed;
+			if (bloodBar.value == 0)
+			{
+				// player.healthPoint = 0;
+				// totally game over
+			}
 		}
 		else
 		{
@@ -738,7 +733,7 @@ class PlayState extends FlxState
 		// var csvData:String = File.getContent("assets/data/room-004.csv");
 		// var csvData:String = File.getContent("assets/data/room-004.csv");
 		// var dataMapString:String = "assets/data/" + _which + ".csv";
-		// var dataMapString:String = "assets/data/map1.csv";
+		// var dataMapString:String = "assets/data/test.csv";
 		var dataMapString:String = "assets/data/map" + _which + ".csv";
 		var csvData:String = File.getContent(dataMapString);
 			// Функция для преобразования CSV данных в двумерный массив
@@ -869,7 +864,8 @@ class PlayState extends FlxState
 		// currentHeight -= tileSize * 32;
 	}
 
-	private function creatWall(jPos:Int = 0, iPos:Int = 0, isImmovable:Bool = true, dir:FlxDirectionFlags = FlxDirectionFlags.ANY, _type:Int = 1):Void
+	// private function creatWall(jPos:Int = 0, iPos:Int = 0, isImmovable:Bool = true, dir:FlxDirectionFlags = FlxDirectionFlags.ANY, _type:Int = 1):Void
+	private function creatWall(jPos:Int = 0, iPos:Int = 0, isImmovable:Bool = true, dir:FlxDirectionFlags = ANY, _type:Int = 1):Void
 	{
 		var tempTile:Tile = new Tile(jPos * 16, iPos * 16);
 		// tempTile.x = jPos * 16;
@@ -879,12 +875,13 @@ class PlayState extends FlxState
 		tempTile.setType(_type);
 		tileMapGroup.add(tempTile);
 	}
-	private function creatEnemy(jPos:Int = 0, iPos:Int = 0, isImmovable:Bool = true, _type:Int = 0):Void
+	private function creatEnemy(jPos:Int = 0, iPos:Int = 0, isImmovable:Bool = false, _type:Int = 0):Void
 	{
 		var tempEnemy:Enemy = new Enemy(jPos * 16, iPos * 16);
 		// tempEnemy.x = jPos * 16;
 		// tempEnemy.y = iPos * 16;
-		tempEnemy.immovable = isImmovable;
+		// tempEnemy.immovable = isImmovable;
+		// tempEnemy.immovable = true;
 		tempEnemy.setType(_type);
 		enemyGroup.add(tempEnemy);
 	}

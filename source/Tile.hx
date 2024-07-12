@@ -15,7 +15,7 @@ class Tile extends FlxSprite
 	private var timerToDie:FlxTimer;
 
 	private var isRefreshing = false;
-	private var refreshingTime:Int = 120;
+	private var refreshingTime:Int = 180;
 	private var currentRefreshingTime:Int = 0;
 
     public function new(X:Float, Y:Float)
