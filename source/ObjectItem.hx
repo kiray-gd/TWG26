@@ -57,7 +57,8 @@ class ObjectItem extends FlxSprite {
 		{
 			case 0:
 				// cracked wall
-				loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
+				// loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
+				loadGraphic("assets/images/tilesetmaintrue.png", true, 16, 16);
 				animation.add("idle", [11], 1, false);
 				animation.play("idle");
 				canGetDamage = true;
@@ -104,13 +105,13 @@ class ObjectItem extends FlxSprite {
 				canGetDamage = false;
 			case 4:
 				// exit
-				loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
+				loadGraphic("assets/images/tilesetmaintrue.png", true, 16, 16);
 				animation.add("exit", [10], 1, false);
 				animation.play("exit");
 				canGetDamage = false;
 			case 5:
 				// gem
-				loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
+				loadGraphic("assets/images/tilesetmaintrue.png", true, 16, 16);
 				animation.add("gem1", [32], 1, false);
 				animation.add("gem2", [33], 1, false);
 				animation.add("gem3", [34], 1, false);
