@@ -22,7 +22,8 @@ class Tile extends FlxSprite
     {
         super(X, Y);
         // loadGraphic("assets/images/player.png", true, 16, 16);
-		loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
+		// loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
+		loadGraphic("assets/images/tilesetmaintrue.png", true, 16, 16);
         animation.add("white", [0], 1, false);
         animation.add("default", [1], 1, false);
         animation.add("platform", [2], 1, false);

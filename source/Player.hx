@@ -250,6 +250,8 @@ class Player extends FlxSprite
 						{
 							// txtGUI.text = "run away";
 							Reg.keysArray = [];
+							Reg.playerLastPosition.set(0, 0);
+							Reg.currentMap++;
 							FlxG.switchState(new PlayState());
 						}
 					case 5:

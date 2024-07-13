@@ -72,10 +72,10 @@ class ObjectItem extends FlxSprite {
 				canGetDamage = false;
 			case 2:
 				// door
-				loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
-				animation.add("door1", [9], 1, false);
-				animation.add("door2", [24], 1, false);
-				animation.add("door3", [25], 1, false);
+				loadGraphic("assets/images/doortile.png", true, 16, 16);
+				animation.add("door1", [0, 1, 2, 3], 1, true);
+				animation.add("door2", [4, 5, 6, 7], 1, true);
+				animation.add("door3", [8, 9, 10, 11], 1, true);
 				switch special
 				{
 					case 1:
@@ -88,10 +88,10 @@ class ObjectItem extends FlxSprite {
 				canGetDamage = false;
 			case 3:
 				// key
-				loadGraphic("assets/images/tilesetmain.png", true, 16, 16);
-				animation.add("key1", [13], 1, false);
-				animation.add("key2", [22], 1, false);
-				animation.add("key3", [23], 1, false);
+				loadGraphic("assets/images/keytile.png", true, 16, 16);
+				animation.add("key1", [0, 1, 2, 3], 4, true);
+				animation.add("key2", [4, 5, 6, 7], 4, true);
+				animation.add("key3", [8, 9, 10, 11], 4, true);
 				switch special
 				{
 					case 1:

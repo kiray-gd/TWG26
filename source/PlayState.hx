@@ -138,6 +138,11 @@ class PlayState extends FlxState
 		bloodBar.alpha = 0.6;
 		bloodBar.scrollFactor.set(0, 0);
 		add(bloodBar);
+		// music
+		if (FlxG.sound.music == null) // don't restart the music if it's already playing
+		{
+			FlxG.sound.playMusic("assets/music/fog1.ogg", 0.4, true);
+		}
     }
 
 	override public function update(elapsed:Float):Void
