@@ -372,6 +372,7 @@ class Player extends FlxSprite
 	}
 	public function updateGui():Void
 	{
+		// clear groups
 		for (elem in healthGroup)
 		{
 			elem.kill();
@@ -391,9 +392,10 @@ class Player extends FlxSprite
 			heart.loadGraphic("assets/images/guitiles.png", true, 16, 16, false);
 			heart.animation.add("idle", [0], 10, false);
 			heart.animation.play("idle");
+			heart.scrollFactor.set(0, 0);
+			heart.immovable = true;
 			heart.x = 8 + (16 * i);
 			heart.y = 214;
-			heart.scrollFactor.set(0, 0);
 			healthGroup.add(heart);
 		}
 		// weapon
@@ -408,8 +410,11 @@ class Player extends FlxSprite
 			weapon.animation.add("idle", [8], 10, false);
 		}
 		weapon.animation.play("idle");
+		weapon.immovable = true;
 		weapon.x = 9;
 		weapon.y = 196;
+		// weapon.x = FlxG.camera.scroll.x + 9;
+		// weapon.y = FlxG.camera.scroll.x + 196;
 		weapon.scrollFactor.set(0, 0);
 		gemsGroup.add(weapon);
 		// gems
@@ -440,8 +445,11 @@ class Player extends FlxSprite
 				gemSprite.animation.add("idle", [6], 10, false);
 			}
 			gemSprite.animation.play("idle");
+			gemSprite.immovable = true;
 			gemSprite.x = 25 + (16 * gemIndex);
 			gemSprite.y = 196;
+			// gemSprite.x = FlxG.camera.scroll.x + 25 + (16 * gemIndex);
+			// gemSprite.y = FlxG.camera.scroll.x + 196;
 			gemSprite.scrollFactor.set(0, 0);
 			gemsGroup.add(gemSprite);
 		}

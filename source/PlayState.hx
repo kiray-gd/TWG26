@@ -160,7 +160,7 @@ class PlayState extends FlxState
 		FlxG.overlap(player.meleeAttack, itemGroup, onMeleeAttackItemOvelap);
 		// Обработка коллайдов игрока и объектов
 		// FlxG.collide(player, itemGroup, onCollidePlayerItems);
-		// FlxG.collide(player, itemGroup);
+		FlxG.collide(player, itemGroup);
 
 		// обработка коллизий стен и босса
 		// FlxG.collide(boss, tileMapGroup, onColBossWalls);
@@ -239,7 +239,8 @@ class PlayState extends FlxState
 		{
 			var _pl:Player = cast(_player, Player);
 			var _tile:Tile = cast(sprGroup, Tile);
-			if (_tile.getType() == 2 && _pl.isWantFall)
+			// if (_tile.getType() == 2 && _pl.isWantFall)
+			if ((_tile.getType() == 2 && _pl.isWantFall) || (_tile.getType() == 8 && _pl.isWantFall))
 			{
 				// trace(_pl.getPosition());
 				_pl.allowCollisions = NONE;
@@ -297,7 +298,7 @@ class PlayState extends FlxState
 	// Collide function Enemys and Walls
 	private function onColEnemyWalls(enemGroup:FlxObject, sprGroup:FlxObject):Void
 	{
-		trace("private function onColEnemyWalls(enemGroup:FlxObject, sprGroup:FlxObject):Void");
+		// trace("private function onColEnemyWalls(enemGroup:FlxObject, sprGroup:FlxObject):Void");
 		if (Std.isOfType(sprGroup, Tile))
 		{
 			var _tile:Tile = cast(sprGroup, Tile);
@@ -405,11 +406,17 @@ class PlayState extends FlxState
 		{
 			if (playerObj.velocity.y > 0)
 			{
-				playerObj.velocity.y = -300;
+				if (bossObj.canGetDamage)
+				{
+					playerObj.velocity.y = -300;
+				}
 			}
 			else
 			{
-				playerObj.velocity.y -= 300;
+				if (bossObj.canGetDamage)
+				{
+					playerObj.velocity.y = -300;
+				}
 				// player.acceleration.y = -1000;
 			}
 			// creatBlood(sprGroup.x + sprGroup.width / 2, sprGroup.y + sprGroup.height / 2);

@@ -39,7 +39,7 @@ class Boss extends FlxSprite
 	private var currentTimer1:Int = 0;
 	private var logicTimer2:Int = 400;
 	private var currentTimer2:Int = 0;
-	private var attackDelay:Int = 60;
+	private var attackDelay:Int = 100;
 	public var isPlayerObscure:Bool = false;
 
 	// bullets groupSource

@@ -56,8 +56,8 @@ class Reg
 	// boss alive
 	static public var bossAlive:Array<Bool> = [true, false, false];
 	// текущий уровень
-	// static public var currentMap:Int = 1;
-	static public var currentMap:Int = 2;
+	static public var currentMap:Int = 1;
+	// static public var currentMap:Int = 2;
 	// weapons and gems
 	static public var weaponsAndGems:Array<Bool> = [false, false, false, false, false, false];
 	// 0 - sword
