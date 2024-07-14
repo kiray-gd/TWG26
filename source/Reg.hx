@@ -56,16 +56,16 @@ class Reg
 	// boss alive
 	static public var bossAlive:Array<Bool> = [true, true, true];
 	// текущий уровень
-	// static public var currentMap:Int = 1;
-	static public var currentMap:Int = 3;
+	static public var currentMap:Int = 1;
+	// static public var currentMap:Int = 3;
 	// weapons and gems
 	// static public var weaponsAndGems:Array<Bool> = [false, false, false, false, false, false];
-	static public var weaponsAndGems:Array<Bool> = [true, false, false, false, false, false];
+	static public var weaponsAndGems:Array<Bool> = [false, false, false, false, false, false];
 	// 0 - sword
 	static public var gems:Array<Bool> = [false, false, false, false, false];
 	// blood magic
-	static public var blood:Float = 10000;
-	static public var bloodMax:Float = 10000;
+	static public var blood:Float = 26000;
+	static public var bloodMax:Float = 26000;
 	// player health
 	static public var maxHealth:Int = 3;
 }

@@ -165,6 +165,7 @@ class Player extends FlxSprite
 			isJumping = true;
 			canJump = false;
 			velocity.y = jumpPower;
+			FlxG.sound.play("assets/sounds/jump.ogg");
 		}
 		else
 		{
@@ -244,6 +245,7 @@ class Player extends FlxSprite
 					case 3:
 						// key
 						Reg.keysArray.push(specActiveObject);
+						FlxG.sound.play("assets/sounds/key.ogg");
 					case 4:
 						// exit, escape, run away
 						if (!Reg.bossAlive[Reg.currentMap - 1])

@@ -53,6 +53,8 @@ class PlayState extends FlxState
 	private var bossBar:FlxBar;
 	private var bloodBar:FlxBar;
 	private var bleed:Float = 1;
+	// total GAME OVER
+	private var isTotalGameOver:Bool = false;
 
     override public function create():Void
     {
@@ -139,10 +141,10 @@ class PlayState extends FlxState
 		bloodBar.scrollFactor.set(0, 0);
 		add(bloodBar);
 		// music
-		if (FlxG.sound.music == null) // don't restart the music if it's already playing
-		{
-			FlxG.sound.playMusic("assets/music/fog1.ogg", 0.4, true);
-		}
+		// if (FlxG.sound.music == null) // don't restart the music if it's already playing
+		// {
+		FlxG.sound.playMusic("assets/music/fog1.ogg", 0.2, true);
+		// }
     }
 
 	override public function update(elapsed:Float):Void
@@ -695,11 +697,27 @@ class PlayState extends FlxState
 		// bleeding
 		if (!player.isWorking)
 		{
-			bloodBar.value -= bleed;
-			if (bloodBar.value == 0)
+			// bloodBar.value -= bleed;
+			if (player.isAlive)
 			{
-				// player.healthPoint = 0;
+				bloodBar.value -= bleed;
+			}
+
+			if (bloodBar.value == 180)
+			{
+				// FlxG.timeScale = 0.2;
+				creatBlood(player.x, player.y);
+			}
+			else if (bloodBar.value == 500)
+			{
+				// FlxG.timeScale = 0.2;
+				creatBlood(player.x, player.y);
+			}
+			else if (bloodBar.value <= 0)
+			{
 				// totally game over
+				player.healthPoint = 0;
+				isTotalGameOver = true;
 			}
 		}
 		else
@@ -712,7 +730,22 @@ class PlayState extends FlxState
 	// прочее
 	private function gameOver():Void
 	{
-		if (isGameOver && !isTimerStart)
+		if (isTotalGameOver)
+		{
+			// сброс сейвов
+			Reg.playerLastPosition.set(0, 0);
+			Reg.keysArray = [];
+			Reg.bossAlive = [true, true, true];
+			Reg.currentMap = 1;
+			Reg.weaponsAndGems = [false, false, false, false, false, false];
+			Reg.gems = [false, false, false, false, false];
+			Reg.blood = 10000;
+			Reg.bloodMax = 10000;
+			Reg.maxHealth = 3;
+
+			FlxG.switchState(new MainState());
+		}
+		else if (isGameOver && !isTimerStart)
 		{
 			trace("game over");
 			isTimerStart = true;

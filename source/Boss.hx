@@ -480,7 +480,7 @@ class Boss extends FlxSprite
 				// blind knight
 				acceleration.set(0, 600);
 				// healthPoint = 2;
-				healthPoint = 20;
+				healthPoint = 16;
 				price = 10000;
 				visibilityArea = 300;
 				maxVelocity.set(96, 600);
@@ -499,7 +499,7 @@ class Boss extends FlxSprite
 				// big eye
 				// acceleration.set(0, 600);
 				// healthPoint = 2;
-				healthPoint = 40;
+				healthPoint = 30;
 				price = 10000;
 				visibilityArea = 380;
 				maxVelocity.set(32, 32);
@@ -515,7 +515,7 @@ class Boss extends FlxSprite
 				scale.set(1.5, 1.5);
 			case 3:
 				// witch
-				healthPoint = 30;
+				healthPoint = 24;
 				price = 10000;
 				visibilityArea = 380;
 				maxVelocity.set(64, 24);
