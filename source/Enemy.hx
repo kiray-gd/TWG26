@@ -284,7 +284,7 @@ class Enemy extends FlxSprite
 						}
 					}
 					// прыжок если близко к игроку
-					if (FlxMath.distanceBetween(this, playerSource) < 32 && canJump)
+					if (FlxMath.distanceBetween(this, playerSource) < 48 && canJump)
 					{
 						canJump = false;
 						velocity.y += jumpPower;
@@ -365,7 +365,7 @@ class Enemy extends FlxSprite
 			case 5:
 				// serpent
 				acceleration.set(0, 600);
-				healthPoint = 3;
+				healthPoint = 4;
 				price = 600;
 				visibilityArea = 300;
 				maxVelocity.set(36, 600);

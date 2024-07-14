@@ -865,6 +865,10 @@ class PlayState extends FlxState
 						// boss 2
 						creatBoss(j, i, false, 2);
 						isBossSpawned = true;	
+					case 28:
+						// boss 3
+						creatBoss(j, i, false, 3);
+						isBossSpawned = true;	
 					case 32:
 						// gem 1
 						creatObject(j, i, true, FlxDirectionFlags.NONE, 5, 1);

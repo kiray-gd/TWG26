@@ -337,12 +337,106 @@ class Boss extends FlxSprite
 					currentTimer1 = 0;
 					currentTimer2 = 0;
 				}
-				
+			case 3:
+				// witch logic
+				// check distance
+				if (FlxMath.distanceBetween(this, playerSource) < visibilityArea)
+				{
+					// игрок в поле видимости
+					isPlayerObscure = true;
+					// angle -= 1;
+					currentTimer1++;
+					currentTimer2++;
+					// перемещение
+					// поворачиваем лицо
+					if (this.x > playerSource.x)
+					{
+						this.facing = RIGHT;
+					}
+					else
+					{
+						this.facing = LEFT;
+					}
+					// сначала двигаемся по высоте, а затем по горизонтали
+					if (this.y + 36 > playerSource.y)
+					{
+						velocity.y -= 10;
+					}
+					else
+					{
+						velocity.y += 10;
+					}
+					// перемещение по горизонтали
+					if (Math.abs(this.x - playerSource.x) > 36)
+					{
+						if (this.x > playerSource.x)
+						{
+							velocity.x -= 10;
+						}
+						else
+						{
+							velocity.x += 10;
+						}
+					}
+					// логика атак
+					// первый таймер
+					if (currentTimer1 > logicTimer1 && currentTimer1 < logicTimer1 + attackDelay)
+					{
+						// задержка перед атакой
+						// angularVelocity += 12;
+						// scale.set(1.3, 1.3);
+						animation.play("attack1");
+					}
+					else if (currentTimer1 == logicTimer1 + attackDelay)
+					{
+						// атака после задержки
+						creatBullet("RIGHT", this.x - 300, this.y - 24);
+						creatBullet("LEFT", this.x + 300, this.y + 24);
+						creatBullet("RIGHT", this.x - 324, this.y - 40);
+						creatBullet("LEFT", this.x + 300, this.y + 40);
+						creatBullet("DOWN", this.x - 60, this.y - 100);
+						creatBullet("DOWN", this.x - 40, this.y - 100);
+						creatBullet("DOWN", this.x - 20, this.y - 100);
+						creatBullet("DOWN", this.x, this.y - 100);
+						creatBullet("DOWN", this.x + 20, this.y - 100);
+						creatBullet("DOWN", this.x + 40, this.y - 100);
+						creatBullet("DOWN", this.x + 60, this.y - 100);
+						currentTimer1 = 0;
+						animation.play("idle");
+					}
+					// второй таймер
+					if (currentTimer2 > logicTimer2 && currentTimer2 < logicTimer2 + attackDelay)
+					{
+						// задержка перед атакой
+						// angle -= 12;
+						velocity.set(0, 0);
+						scale.set(1.6, 1.2);
+					}
+					else if (currentTimer2 > logicTimer2 + attackDelay)
+					{
+						// каст сумонов
+						scale.set(1.5, 1.5);
+						creatSummons(this.x, this.y + 16, 5);
+						currentTimer2 = 0;
+						currentTimer1 = 0;
+					}
+				}
+				else
+				{
+					// игрок вне поля видимости
+					animation.play("idle");
+					isPlayerObscure = false;
+					// decrase velocity
+					acceleration.x = 0;
+					acceleration.y = 0;
+					currentTimer1 = 0;
+					currentTimer2 = 0;
+				}
 					
 		}
 	}
 
-	// some actions test
+	// some actions
 	private function creatBullet(_direction:String = "UP", posX:Float, posY:Float)
 	{
 		var tmpBullet:FlxSprite = new FlxSprite(posX, posY);
@@ -410,14 +504,32 @@ class Boss extends FlxSprite
 				visibilityArea = 380;
 				maxVelocity.set(32, 32);
 				jumpPower = -250;
-				logicTimer1 = 420;
-				logicTimer2 = 800;
+				logicTimer1 = 450;
+				logicTimer2 = 900;
 				// change hitbox
 				this.setSize(16, 16);
 				this.immovable = true;
 				// this.offset.set(3, 3);
 				loadGraphic("assets/images/boss2.png", true, 24, 24);
 				animation.add("idle", [0, 1, 2, 3], 4, true, true);
+				scale.set(1.5, 1.5);
+			case 3:
+				// witch
+				healthPoint = 30;
+				price = 10000;
+				visibilityArea = 380;
+				maxVelocity.set(64, 24);
+				jumpPower = -250;
+				logicTimer1 = 400;
+				logicTimer2 = 666;
+				// change hitbox
+				this.setSize(12, 12);
+				this.offset.set(4, 4);
+				// this.immovable = true;
+				loadGraphic("assets/images/boss3.png", true, 24, 24);
+				animation.add("idle", [0, 1, 2, 3, 4, 5], 10, true, true);
+				animation.add("attack1", [6], 60, false, true);
+				animation.add("attack2", [7], 60, false, true);
 				scale.set(1.5, 1.5);
 		}
 
