@@ -254,6 +254,7 @@ class Player extends FlxSprite
 							Reg.keysArray = [];
 							Reg.playerLastPosition.set(0, 0);
 							Reg.currentMap++;
+							
 							FlxG.switchState(new PlayState());
 						}
 					case 5:
