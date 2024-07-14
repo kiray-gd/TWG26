@@ -166,7 +166,8 @@ class PlayState extends FlxState
 		// Обработка коллайдов игрока и объектов
 		// FlxG.collide(player, itemGroup, onCollidePlayerItems);
 		FlxG.collide(player, itemGroup);
-
+		// ОБработка коллайдов врагов и объектов
+		FlxG.collide(enemyGroup, itemGroup);
 		// обработка коллизий стен и босса
 		// FlxG.collide(boss, tileMapGroup, onColBossWalls);
 		FlxG.collide(boss, tileMapGroup);
@@ -174,13 +175,13 @@ class PlayState extends FlxState
 		FlxG.collide(boss, itemGroup);
 
 
-		// ОБработка коллайдов врагов и объектов
-		FlxG.collide(enemyGroup, itemGroup);
+
 
 		// Обработка коллайдов объектов и стен
 		// FlxG.collide(itemGroup, itemGroup);
 		// Обработка оверлапов крови и стен
-		FlxG.collide(particleGroup, tileMapGroup, onOverlapParticleWall);
+		// FlxG.collide(particleGroup, tileMapGroup, onOverlapParticleWall);
+		FlxG.overlap(particleGroup, tileMapGroup, onOverlapParticleWall);
 
 		// обновление области видимости игрока
 		visionRegionUpdate();
@@ -457,6 +458,8 @@ class PlayState extends FlxState
 
 		particle.velocity.set(0, 0);
 		particle.acceleration.set(0, 0);
+		particle.setPosition(particle.x, particle.y);
+		particle.alive = false;
 		// cast(particle, Particle).isSpot = true;
 		// particle.angularAcceleration = 0;
 
@@ -511,6 +514,10 @@ class PlayState extends FlxState
 					if (FlxMath.distanceBetween(player, cast(everyTile, FlxSprite)) < tileSize)
 					{
 						cast(everyTile, Tile).alpha = 0.2;
+					}
+					else
+					{
+						cast(everyTile, Tile).alpha = 1;
 					}
 				}
 			}

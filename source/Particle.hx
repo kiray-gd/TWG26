@@ -21,6 +21,8 @@ class Particle extends FlxSprite
         animation.play("default");
         setSize(1,1);
         offset.set((width-1)/2,(height-1)/2);
+		acceleration.set(0, 400);
+		drag.set(600, 600);
     }
 
     override public function update(elapsed:Float):Void

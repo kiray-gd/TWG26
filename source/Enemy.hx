@@ -335,7 +335,7 @@ class Enemy extends FlxSprite
 			case 2:
 				// runer
 				acceleration.set(0, 600);
-				healthPoint = 4;
+				healthPoint = 3;
 				price = 500;
 				visibilityArea = 300;
 				maxVelocity.set(120, 600);
