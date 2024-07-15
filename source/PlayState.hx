@@ -479,6 +479,7 @@ class PlayState extends FlxState
 		if (attackObj.visible == true && cast(enemyObj, Enemy).canGetDamage)
 		{
 			cast(enemyObj, Enemy).onAttack(player.x, player.y, 1);
+			FlxG.sound.play("assets/sounds/hithurt.ogg");
 		}
 	}
 
@@ -487,6 +488,7 @@ class PlayState extends FlxState
 		if (attackObj.visible == true && cast(enemyObj, Boss).canGetDamage)
 		{
 			cast(enemyObj, Boss).onAttack(player.x, player.y, 1);
+			FlxG.sound.play("assets/sounds/hithurt.ogg");
 		}
 	}
 
@@ -588,6 +590,7 @@ class PlayState extends FlxState
 				bloodBar.value += tempEnemySpr.price;
 				tempEnemySpr.kill();
 				enemyGroup.remove(enem, true);
+				FlxG.sound.play("assets/sounds/explosion.ogg");
 			}
 		}
 		// check boss alive

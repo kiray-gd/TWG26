@@ -86,6 +86,16 @@ class Player extends FlxSprite
 		FlxG.state.add(healthGroup);
 		gemsGroup = new FlxGroup();
 		FlxG.state.add(gemsGroup);
+		// add one heart for every gem
+		for (everygem in Reg.gems)
+		{
+			if (everygem)
+			{
+				healthPoint++;
+			}
+		}
+
+		
 		updateGui();
     }
 
@@ -184,6 +194,7 @@ class Player extends FlxSprite
 			isAttack = true;
 			animation.play("attack");
 			meleeAttack.startAttack();
+			FlxG.sound.play("assets/sounds/hit.ogg");
 			// meleeAttack.setPosition(this.x + 16, this.y - 8);
 			if (this.facing == RIGHT)
 			{
@@ -255,12 +266,21 @@ class Player extends FlxSprite
 							Reg.playerLastPosition.set(0, 0);
 							Reg.currentMap++;
 							
-							FlxG.switchState(new PlayState());
+							if (Reg.currentMap < 4)
+							{
+								FlxG.switchState(new PlayState());
+							}
+							else
+							{
+								FlxG.switchState(new FinalState());
+							}
+							
 						}
 					case 5:
 						// GEM
+						FlxG.sound.play("assets/sounds/pickup.ogg");
 						Reg.gems[specActiveObject - 1] = true;
-						Reg.maxHealth += 1;
+						// Reg.maxHealth += 1;
 						Reg.bloodMax += 2500;
 						// healthPoint++;
 						updateGui();
@@ -310,6 +330,7 @@ class Player extends FlxSprite
 	{
 		if (canGetDamage)
 		{
+			FlxG.sound.play("assets/sounds/playerhurt.ogg");
 			healthPoint -= 1;
 			updateGui();
 			canGetDamage = false;
@@ -324,6 +345,7 @@ class Player extends FlxSprite
 	{
 		if (canGetDamage)
 		{
+			FlxG.sound.play("assets/sounds/playerhurt.ogg");
 			healthPoint -= 1;
 			updateGui();
 			canGetDamage = false;
