@@ -97,6 +97,14 @@ class Boss extends FlxSprite
 				{
 					// игрок виден
 					isPlayerObscure = true;
+					Reg.isMusicFlow = false;
+
+					if (!Reg.isBossMusicFlow)
+					{
+						FlxG.sound.playMusic("assets/music/battle.ogg", 0.2, true);
+						Reg.isBossMusicFlow = true;
+					}
+					
 					currentTimer1++;
 					currentTimer2++;
 
@@ -233,6 +241,13 @@ class Boss extends FlxSprite
 				{
 					// игрок в поле видимости
 					isPlayerObscure = true;
+					Reg.isMusicFlow = false;
+
+					if (!Reg.isBossMusicFlow)
+					{
+						FlxG.sound.playMusic("assets/music/battle.ogg", 0.2, true);
+						Reg.isBossMusicFlow = true;
+					}
 					angle -= 1;
 					currentTimer1++;
 					currentTimer2++;
@@ -344,6 +359,13 @@ class Boss extends FlxSprite
 				{
 					// игрок в поле видимости
 					isPlayerObscure = true;
+					Reg.isMusicFlow = false;
+
+					if (!Reg.isBossMusicFlow)
+					{
+						FlxG.sound.playMusic("assets/music/battle.ogg", 0.2, true);
+						Reg.isBossMusicFlow = true;
+					}
 					// angle -= 1;
 					currentTimer1++;
 					currentTimer2++;

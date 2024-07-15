@@ -70,4 +70,7 @@ class Reg
 	static public var bloodMax:Float = 26000;
 	// player health
 	static public var maxHealth:Int = 3;
+	// music controller
+	static public var isMusicFlow:Bool = false;
+	static public var isBossMusicFlow:Bool = false;
 }

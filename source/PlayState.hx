@@ -141,10 +141,17 @@ class PlayState extends FlxState
 		bloodBar.scrollFactor.set(0, 0);
 		add(bloodBar);
 		// music
-		// if (FlxG.sound.music == null) // don't restart the music if it's already playing
-		// {
-		FlxG.sound.playMusic("assets/music/fog1.ogg", 0.2, true);
-		// }
+		if (Reg.isMusicFlow)
+		{
+			// nothing
+		}
+		else
+		{
+			FlxG.sound.playMusic("assets/music/fog1.ogg", 0.2, true);
+			Reg.isMusicFlow = true;
+			Reg.isBossMusicFlow = false;
+		}
+		
     }
 
 	override public function update(elapsed:Float):Void
@@ -601,6 +608,9 @@ class PlayState extends FlxState
 					// add blood to player
 					bloodBar.value += 5000;
 					player.updateGui();
+					Reg.isBossMusicFlow = false;
+					Reg.isMusicFlow = false;
+					FlxG.sound.music.stop();
 				}
 			}
 		}
