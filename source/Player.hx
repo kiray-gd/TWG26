@@ -255,8 +255,8 @@ class Player extends FlxSprite
 						activateBonfire();
 					case 3:
 						// key
-						Reg.keysArray.push(specActiveObject);
-						FlxG.sound.play("assets/sounds/key.ogg");
+						// Reg.keysArray.push(specActiveObject);
+						// FlxG.sound.play("assets/sounds/key.ogg");
 					case 4:
 						// exit, escape, run away
 						if (!Reg.bossAlive[Reg.currentMap - 1])
@@ -378,7 +378,7 @@ class Player extends FlxSprite
 				txtGUI.text = "door closed";
 			case 3:
 				// key
-				txtGUI.text = "take key";
+				txtGUI.text = "key";
 			case 4:
 				// exit
 				if (!Reg.bossAlive[Reg.currentMap - 1])

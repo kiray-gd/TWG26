@@ -644,7 +644,13 @@ class PlayState extends FlxState
 			var _item:FlxSprite = cast(itemObject, FlxSprite);
 			// если дистанция между объектом и игроком меньше 30 то появляется текстовое окно
 			// if (FlxMath.distanceBetween(player, cast(itemObject, FlxSprite)) < 30)
-			if (Math.abs(player.x + 4 - _item.x) < 24 && Math.abs(player.y - _item.y) < 8)
+			if(cast(_item, ObjectItem).type == 3 &&
+				Math.abs(player.x - 4 - _item.x) < 8 && Math.abs(player.y - _item.y) < 8){
+				//take key
+				// trace("asd");
+				Reg.keysArray.push(cast(_item, ObjectItem).special);
+				FlxG.sound.play("assets/sounds/key.ogg");
+			}	else if (Math.abs(player.x - 4 - _item.x) < 16 && Math.abs(player.y - _item.y) < 8)
 			{
 				player.activateObject(cast(_item, ObjectItem).type, cast(_item, ObjectItem).special);
 				isAnyObjectHere = true;
@@ -798,8 +804,8 @@ class PlayState extends FlxState
 		// var csvData:String = File.getContent("assets/data/room-004.csv");
 		// var csvData:String = File.getContent("assets/data/room-004.csv");
 		// var dataMapString:String = "assets/data/" + _which + ".csv";
-		// var dataMapString:String = "assets/data/test.csv";
-		var dataMapString:String = "assets/data/map" + _which + ".csv";
+		var dataMapString:String = "assets/data/test.csv";
+		// var dataMapString:String = "assets/data/map" + _which + ".csv";
 		var csvData:String = File.getContent(dataMapString);
 			// Функция для преобразования CSV данных в двумерный массив
 			var rows:Array<String> = csvData.split("\n");
