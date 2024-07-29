@@ -254,7 +254,6 @@ class PlayState extends FlxState
 		{
 			var _pl:Player = cast(_player, Player);
 			var _tile:Tile = cast(sprGroup, Tile);
-			// if (_tile.getType() == 2 && _pl.isWantFall)
 			if ((_tile.getType() == 2 && _pl.isWantFall) || (_tile.getType() == 8 && _pl.isWantFall))
 			{
 				// trace(_pl.getPosition());
@@ -263,10 +262,11 @@ class PlayState extends FlxState
 				resTimer.start(0.001, function(timer:FlxTimer)
 				{
 					_pl.allowCollisions = ANY;
+					player.isWantFall = false;
 				});
 
 				// trace(_pl.getPosition());
-				player.isWantFall = false;
+				// player.isWantFall = false;
 				// player.immovable = false;
 				// _pl.x += 20;
 			}
@@ -804,8 +804,8 @@ class PlayState extends FlxState
 		// var csvData:String = File.getContent("assets/data/room-004.csv");
 		// var csvData:String = File.getContent("assets/data/room-004.csv");
 		// var dataMapString:String = "assets/data/" + _which + ".csv";
-		var dataMapString:String = "assets/data/test.csv";
-		// var dataMapString:String = "assets/data/map" + _which + ".csv";
+		// var dataMapString:String = "assets/data/test.csv";
+		var dataMapString:String = "assets/data/map" + _which + ".csv";
 		var csvData:String = File.getContent(dataMapString);
 			// Функция для преобразования CSV данных в двумерный массив
 			var rows:Array<String> = csvData.split("\n");

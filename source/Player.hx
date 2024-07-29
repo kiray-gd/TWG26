@@ -129,6 +129,7 @@ class Player extends FlxSprite
 		if (isTouching(FLOOR))
 		{
 			canJump = true;
+			isWantFall = false;
 			currentKoyotTime = 0;
 		}
 		else
@@ -157,18 +158,18 @@ class Player extends FlxSprite
 		}
 
 		// Прыжок
-		if (FlxG.keys.pressed.DOWN)
+		if (FlxG.keys.pressed.DOWN && isTouching(FLOOR))
 		{
 			// if (FlxG.keys.pressed.SPACE && FlxG.keys.pressed.DOWN)
-			if (FlxG.keys.pressed.SPACE)
-			{
+			// if (FlxG.keys.pressed.SPACE)
+			// {
 				isWantFall = true;
 
-			}
-			else
-			{
-				isWantFall = false;
-			}
+			// }
+			// else
+			// {
+			// isWantFall = false;
+			// }
 		}
 		else if (FlxG.keys.justPressed.SPACE && canJump)
 		{
