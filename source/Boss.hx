@@ -21,7 +21,7 @@ class Boss extends FlxSprite
 	public var healthPoint:Int = 10;
 
 	private var damageTimer:FlxTimer;
-	private var flickerTime:Float = 1;
+	private var flickerTime:Float = 0.5;
 
 	public var isAlive:Bool = true;
 	private var isMoving:Bool = false;

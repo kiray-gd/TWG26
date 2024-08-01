@@ -76,7 +76,8 @@ class Player extends FlxSprite
 		// additional sprite initiation
 		meleeAttack = new MeleeAttack(this.x, this.y);
 		FlxG.state.add(meleeAttack);
-		txtGUI = new FlxText(0, 0, 64, "keep warm");
+		txtGUI = new FlxText(0, 0, 96, "keep warm");
+		txtGUI.alignment = FlxTextAlign.CENTER;
 		txtGUI.visible = false;
 		FlxG.state.add(txtGUI);
 		healthPoint = Reg.maxHealth;
@@ -117,8 +118,8 @@ class Player extends FlxSprite
 			isAlive = false;
 		}
 		// change text GUI position
-		txtGUI.x = this.x - 16;
-		txtGUI.y = this.y - 16;
+		txtGUI.x = this.x - 36;
+		txtGUI.y = this.y - 40;
 
 		super.update(elapsed);
 	}
@@ -142,12 +143,12 @@ class Player extends FlxSprite
 			}
 		}
 		// Управление движением
-		if (FlxG.keys.pressed.LEFT)
+		if (FlxG.keys.pressed.LEFT || FlxG.keys.pressed.A)
 		{
 			acceleration.x = -drag.x;
 			this.facing = LEFT;
 		}
-		else if (FlxG.keys.pressed.RIGHT)
+		else if (FlxG.keys.pressed.RIGHT || FlxG.keys.pressed.D)
 		{
 			acceleration.x = drag.x;
 			this.facing = RIGHT;
@@ -158,7 +159,7 @@ class Player extends FlxSprite
 		}
 
 		// Прыжок
-		if (FlxG.keys.pressed.DOWN && isTouching(FLOOR))
+		if ((FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.S) && isTouching(FLOOR))
 		{
 			// if (FlxG.keys.pressed.SPACE && FlxG.keys.pressed.DOWN)
 			// if (FlxG.keys.pressed.SPACE)
@@ -189,7 +190,7 @@ class Player extends FlxSprite
 		{
 			// nothing
 		}
-		else if (FlxG.keys.pressed.V && canAttack)
+		else if (FlxG.keys.pressed.ALT && canAttack)
 		{
 			canAttack = false;
 			isAttack = true;
@@ -254,6 +255,7 @@ class Player extends FlxSprite
 					case 1:
 						// bondire
 						activateBonfire();
+						txtGUI.visible = false;
 					case 3:
 						// key
 						// Reg.keysArray.push(specActiveObject);
@@ -282,6 +284,7 @@ class Player extends FlxSprite
 						FlxG.sound.play("assets/sounds/pickup.ogg");
 						Reg.gems[specActiveObject - 1] = true;
 						// Reg.maxHealth += 1;
+						// healthPoint++;
 						Reg.bloodMax += 2500;
 						// healthPoint++;
 						updateGui();
@@ -292,7 +295,7 @@ class Player extends FlxSprite
 		}
 		// тестовые кнопки
 		// суицид
-		if (FlxG.keys.pressed.S)
+		if (FlxG.keys.pressed.DELETE)
 		{
 			healthPoint -= healthPoint;
 		}
@@ -365,7 +368,11 @@ class Player extends FlxSprite
 	{
 		typeActiveObject = _type;
 		specActiveObject = spec;
-		txtGUI.visible = true;
+		if (!isWorking)
+		{
+			txtGUI.visible = true;
+		}
+		
 		switch _type
 		{
 			case 0:
@@ -373,7 +380,8 @@ class Player extends FlxSprite
 				txtGUI.visible = false;
 			case 1:
 				// bonfire
-				txtGUI.text = "keep warm";
+				txtGUI.text = "press E
+				to keep warm";
 			case 2:
 				// door
 				txtGUI.text = "door closed";
@@ -384,7 +392,8 @@ class Player extends FlxSprite
 				// exit
 				if (!Reg.bossAlive[Reg.currentMap - 1])
 				{
-					txtGUI.text = "run away";
+					txtGUI.text = "press E
+					to run away";
 				}
 				else
 				{
@@ -481,5 +490,31 @@ class Player extends FlxSprite
 			gemSprite.scrollFactor.set(0, 0);
 			gemsGroup.add(gemSprite);
 		}
+		// draw keys
+		if (Reg.keysArray.length > 0)
+		{
+			for (keyIndex in 0...Reg.keysArray.length)
+			{
+				trace(Reg.keysArray);
+				var keySprite:FlxSprite = new FlxSprite();
+				keySprite.loadGraphic("assets/images/keytile.png", true, 16, 16);
+				switch Reg.keysArray[keyIndex]
+				{
+					case 1:
+						keySprite.animation.add("key", [0, 1, 2, 3], 1, true);
+					case 2:
+						keySprite.animation.add("key", [4, 5, 6, 7], 1, true);
+					case 3:
+						keySprite.animation.add("key", [8, 9, 10, 11], 1, true);
+				}
+				keySprite.animation.play("key");
+				keySprite.immovable = true;
+				keySprite.x = 105 + (16 * keyIndex);
+				keySprite.y = 196;
+				keySprite.scrollFactor.set(0, 0);
+				gemsGroup.add(keySprite);
+			}
+		}
+		
 	}
 }

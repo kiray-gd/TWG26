@@ -649,7 +649,11 @@ class PlayState extends FlxState
 				//take key
 				// trace("asd");
 				Reg.keysArray.push(cast(_item, ObjectItem).special);
+				_item.kill();
+				itemGroup.remove(_item, true);
+				// checkKeysAndDoors();
 				FlxG.sound.play("assets/sounds/key.ogg");
+				player.updateGui();
 			}	else if (Math.abs(player.x - 4 - _item.x) < 16 && Math.abs(player.y - _item.y) < 8)
 			{
 				player.activateObject(cast(_item, ObjectItem).type, cast(_item, ObjectItem).special);
