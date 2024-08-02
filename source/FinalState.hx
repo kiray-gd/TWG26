@@ -60,9 +60,9 @@ class FinalState extends FlxState
 		statsTitle.setFormat("assets/data/pixelcyrr.ttf", 11, 0xFFFFAE00, "center");
 		// statsTitle.y = 76;
 		add(statsTitle);
-		statsTitle.text = "Крови сохранено: " + Reg.blood;
+		statsTitle.text = "Blood saved: " + Reg.blood;
 		statsTitle.text += "
-Гемов собрано: " + gemSumm + " из 5";
+Gems taken: " + gemSumm + " of 5";
 
         duckTitle = new FlxSprite();
         
@@ -73,14 +73,14 @@ class FinalState extends FlxState
             mainTitle.setFormat("assets/data/pixelcyrr.ttf", 11, 0xFF815EFF, "center");
             duckTitle.loadGraphic("assets/images/goodduck.png");
             statsTitle.text += "
-открыта истинная концовка";
+open true end";
         }   else{
             // bad music
             FlxG.sound.playMusic("assets/music/drift.ogg", 0.4, true);
             FlxG.cameras.bgColor = 0xFF000000;
             duckTitle.loadGraphic("assets/images/badduck.png");
             statsTitle.text += "
-открыта темная концовка";
+open dark end";
         }
 
         qrTitle.y = 1000;
@@ -124,39 +124,43 @@ class FinalState extends FlxState
 
 
 		mainTitle.text = "
-Благодарности
+Special 
 P1nk_x1
 Pururin
 Нульч
 cojam
-		
-Музыка
-kiraygd - dreaming
-kiraygd - drift
-kiraygd - forgoten
-kiraygd - midnight
-		
-Звуки
-Чешуегорлый мохо
-		
-Инструменты разработки
+ed
 HaxeFlixel
 VS code
 Adobe Photoshop
 audacity
-Bfxr Standalone
-Suno
-Leonardo.ai
-		
-		
+Standalone
+Thank you for completing my g
+ used
+HaxeFlixel
+VS code
+Adobe Photoshop
+audacity
+Standalone
+Thank you for completing my ga
 
-Спасибо, что прошли мою игру!";
+ you for completing my game
+ you for completing my g
+ used
+HaxeFlixel
+VS code
+Adobe Photoshop
+audacity
+Standalone
+Thank you for completing my ga
+
+for completing my game!";
 	}
 
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		currentTime++;
+		// currentTime++;
 		if (currentTime > timeToGo && currentTime < 3600)
 		{
 			bsTitle.alpha -= 0.01;

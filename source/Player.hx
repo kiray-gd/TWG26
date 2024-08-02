@@ -35,6 +35,9 @@ class Player extends FlxSprite
 	private var isAttack:Bool = false;
 	private var attackCoolDownTimer:FlxTimer;
 	private var coolDownTime:Float = 0.4;
+	// temporary txt gui for attack guide
+	private var txtTutor:FlxText;
+	private var isGuideOn:Bool = false;
 
 	// some for work
 	public var isWorking:Bool = false;
@@ -96,7 +99,10 @@ class Player extends FlxSprite
 			}
 		}
 
-		
+		// tutor for fight
+		txtTutor = new FlxText(0, 0, 128, "press ALT to attack");
+		FlxG.state.add(txtTutor);
+
 		updateGui();
     }
 
@@ -120,6 +126,9 @@ class Player extends FlxSprite
 		// change text GUI position
 		txtGUI.x = this.x - 36;
 		txtGUI.y = this.y - 40;
+		// change text tutor position
+		txtTutor.x = this.x - 40;
+		txtTutor.y = this.y - 56;
 
 		super.update(elapsed);
 	}
@@ -218,6 +227,8 @@ class Player extends FlxSprite
 				// создаем спрайт атаки
 				// tempMelee:
 			});
+			// hide txt tutor
+			txtTutor.visible = false;
 		}
 
 		// обновление анимации в зависимости от линейной скорости если нет анимации атаки
@@ -514,6 +525,19 @@ class Player extends FlxSprite
 				keySprite.scrollFactor.set(0, 0);
 				gemsGroup.add(keySprite);
 			}
+		}
+		// update txt tutor
+		if (Reg.currentMap == 1 && Reg.bossAlive[0])
+		{
+			txtTutor.visible = false;
+		}
+		else if (Reg.currentMap == 1 && !Reg.bossAlive[0])
+		{
+			txtTutor.visible = true;
+		}
+		else
+		{
+			txtTutor.visible = false;
 		}
 		
 	}

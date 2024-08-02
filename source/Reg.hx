@@ -72,8 +72,8 @@ class Reg
 	// TEST
 	// static public var gems:Array<Bool> = [true, true, true, true, true];
 	// blood magic
-	static public var blood:Float = 26000;
-	static public var bloodMax:Float = 26000;
+	static public var blood:Float = 8000;
+	static public var bloodMax:Float = 8000;
 	// player health
 	static public var maxHealth:Int = 3;
 	// music controller
